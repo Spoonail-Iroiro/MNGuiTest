@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="RemoteTraderCheckMod">
+      <HintPath>libs/RemoteTraderCheckMod.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="VintagestoryAPI">
       <HintPath>$(VINTAGE_STORY)/VintagestoryAPI.dll</HintPath>
       <Private>false</Private>

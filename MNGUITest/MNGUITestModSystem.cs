@@ -1,4 +1,5 @@
-﻿using MNGUITest.BlockEntities;
+﻿using HarmonyLib;
+using MNGUITest.BlockEntities;
 using MNGUITest.Blocks;
 using MNGUITest.GUI;
 using Vintagestory.API.Client;
@@ -11,6 +12,8 @@ namespace MNGUITest {
         GuiDialogTest1? test1Dialog;
 
         public static string ModID { get; private set; } = "";
+
+        public Harmony Harmony => new Harmony(Mod.Info.ModID);
 
         static void RegisterBlockClass<T>(ICoreAPI api) {
             api.RegisterBlockClass(ModID + "." + typeof(T).Name, typeof(T));
@@ -29,6 +32,10 @@ namespace MNGUITest {
         public override void Start(ICoreAPI api) {
             RegisterBlockClass<BlockItemTest>(api);
             RegisterBlockEntityClass<BEItemTest>(api);
+
+            if (!Harmony.HasAnyPatches(Mod.Info.ModID)) {
+                Harmony.PatchAll();
+            }
         }
 
         public override void StartServerSide(ICoreServerAPI api) {
@@ -70,5 +77,9 @@ namespace MNGUITest {
                 });
         }
 
+        public override void Dispose() {
+            base.Dispose();
+            Harmony.UnpatchAll(Mod.Info.ModID);
+        }
     }
 }

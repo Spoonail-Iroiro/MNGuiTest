@@ -1,9 +1,11 @@
 ﻿using MNGUI.GUI.MNGui;
 using MNGUI.Layouts;
 using MNGUI.RootLayouts;
+using MNGUITest.Patches;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
+using Vintagestory.GameContent;
 
 namespace MNGUITest.GUI;
 public class GuiDialogTest1 : GuiDialogGeneric {
@@ -16,7 +18,7 @@ public class GuiDialogTest1 : GuiDialogGeneric {
 
         var guiStd = new GuiStd(capi);
 
-        var body = new VerticalLayout(capi)
+        var body = new VerticalLayout(capi, 5)
             .Add(
                 new HorizontalLayout(capi)
                     .Add(guiStd.TextAutoBoxSize("whiteDetail", font: CairoFont.WhiteDetailText()))
@@ -55,20 +57,12 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                     )
             )
             .Add(
-                new HorizontalLayout(capi, alignment: HorizontalLayoutAlignment.Right)
-                    .Add(
-                        new GuiElementTextButton(capi, "Button", CairoFont.ButtonText(), CairoFont.ButtonText(), () => true, GuiStd.ElementBoundsWH(100, 24)),
-                        "btn-click"
-                    )
-                    .AddHorizontalSpace(10)
-            )
-            .Add(
                 new HorizontalLayout(capi, 10)
                     .Add(
                         new HorizontalLayout(capi)
                             .Add(guiStd.TextAutoBoxSize("X"))
                             .Add(
-                            new GuiElementTextInput(capi, ElementBounds.FixedSize(100, GuiStyle.SmallishFontSize), null, CairoFont.WhiteSmallishText()),
+                            new GuiElementTextInput(capi, ElementBounds.FixedSize(100, GuiStyle.SmallishFontSize), null, CairoFont.WhiteDetailText()),
                             "txt-x"
                             )
                     )
@@ -76,7 +70,7 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                         new HorizontalLayout(capi)
                             .Add(guiStd.TextAutoBoxSize("Y"))
                             .Add(
-                            new GuiElementTextInput(capi, ElementBounds.FixedSize(100, GuiStyle.SmallishFontSize), null, CairoFont.WhiteSmallishText()),
+                            new GuiElementTextInput(capi, ElementBounds.FixedSize(100, GuiStyle.SmallishFontSize), null, CairoFont.WhiteDetailText()),
                             "txt-y"
                             )
                     )
@@ -84,10 +78,24 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                         new HorizontalLayout(capi)
                             .Add(guiStd.TextAutoBoxSize("Z"))
                             .Add(
-                            new GuiElementTextInput(capi, ElementBounds.FixedSize(100, GuiStyle.SmallishFontSize), null, CairoFont.WhiteSmallishText()),
+                            new GuiElementTextInput(capi, ElementBounds.FixedSize(100, GuiStyle.SmallishFontSize), null, CairoFont.WhiteDetailText()),
                             "txt-z"
                             )
                     )
+            )
+            .Add(
+                new HorizontalLayout(capi, alignment: HorizontalLayoutAlignment.Right)
+                    .Add(
+                        new HorizontalLayout(capi)
+                        .Add(
+                            new GuiElementTextButton(capi, "Button", CairoFont.ButtonText(), CairoFont.ButtonText(), () => true, GuiStd.ElementBoundsWH(100, 24)),
+                            "btn-click"
+                        )
+                        .AddHorizontalSpace(20)
+                    )
+            )
+            .Add(
+                GetItemStackTestLayout(capi, Patcher1.previousStockInfo?.GetInventoryRemoteTrader(capi))
             );
 
         rootLayout.SetChildLayout(body);
@@ -98,6 +106,61 @@ public class GuiDialogTest1 : GuiDialogGeneric {
         dyn.AutoHeight();
         SetupDialogWithRootLayout(rootLayout);
         rootLayout.ConnectToTitleBarClose(() => TryClose());
+    }
+
+    protected LayoutBase GetItemStackTestLayout(
+        ICoreClientAPI capi,
+        InventoryTrader? inventory
+    ) {
+        var guiStd = new GuiStd(capi);
+        if (inventory == null) {
+            return new HorizontalLayout(capi).Add(guiStd.TextAutoBoxSize("No inventory to show"));
+        }
+
+        var isSelling = false;
+        var maxN = 5;
+
+        var layouts = new List<LayoutBase>();
+
+        double pad = GuiElementItemSlotGridBase.unscaledSlotPadding;
+        double slotOneSideLength = GuiElementItemSlotGridBase.unscaledSlotPadding + GuiElementPassiveItemSlot.unscaledSlotSize;
+        var sortedSlots = (isSelling ? inventory.SellingSlots : inventory.BuyingSlots)
+            .Select((slot, idx) => (slot, i: (isSelling ? 0 : 20) + idx))
+            .OrderBy(slotI => slotI.slot.GetStackName());
+        var i = 0;
+        foreach (var slotI in sortedSlots) {
+            if (slotI.slot.Empty) continue;
+            if (i >= maxN) break;
+            var slotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, pad, pad, 1, 1);
+            var slotGrid = new GuiElementItemSlotGrid(capi, inventory, (obj) => { }, 1, new int[] { slotI.i }, slotBounds);
+            var texts = new VerticalLayout(capi)
+                .Add(guiStd.TextAutoBoxSize(slotI.slot.GetStackName(), font: CairoFont.WhiteSmallishText()))
+                .Add(guiStd.TextAutoBoxSize($"x{slotI.slot.StackSize}", font: CairoFont.WhiteSmallText()));
+
+            //FormatTraderSlotDescription(capi, slotI.slot, isSelling, slotOneSideLength, width - slotOneSideLength);
+            layouts.Add(
+                new HorizontalLayout(capi)
+                .Add(
+                    slotGrid
+                )
+                .Add(
+                    texts
+                //guiStd.StandardRichText(formatted, fixedWidth - slotOneSideLength)
+                )
+                .AddHorizontalSpace(20)
+            );
+
+            ++i;
+        }
+
+        var rtnLayout = new VerticalLayout(capi, 5);
+
+        foreach (var lay in layouts) {
+            rtnLayout.Add(lay);
+        }
+
+        return rtnLayout;
+
     }
 
     protected void SetupDialogWithRootLayout(StandardRootLayout rootLayout) {

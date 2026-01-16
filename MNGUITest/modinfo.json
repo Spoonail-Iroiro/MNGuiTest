@@ -1,13 +1,12 @@
 {
-    "type": "code",
-    "modid": "mnguitest",
-    "name": "MNGUITest",
-    "authors": [
-        "Unknown"
-    ],
-    "description": "To be added",
-    "version": "1.0.0",
-    "dependencies": {
-        "game": ""
-    }
+  "type": "code",
+  "modid": "mnguitest",
+  "name": "MNGUITest",
+  "authors": ["Spoon", "Mononospace"],
+  "description": "MNGUI test",
+  "version": "0.1.0",
+  "dependencies": {
+    "game": "",
+    "remotetradercheckmod": "0.4.3-dev.*"
+  }
 }
