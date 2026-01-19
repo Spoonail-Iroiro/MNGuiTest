@@ -52,7 +52,14 @@ public class GuiDialogTest1 : GuiDialogGeneric {
             .Add(
                 new HorizontalLayout(capi)
                     .Add(
-                        new GuiElementDynamicText(capi, "placeholder\nfoo\nbar", font: CairoFont.WhiteDetailText(), GuiStd.ElementBoundsWH(300, GuiStyle.DetailFontSize * 1 + 4)),
+                        () => {
+                            var dyn = new GuiElementDynamicText(capi, "placeholder\nfoo\nbar", font: CairoFont.WhiteDetailText(), GuiStd.ElementBoundsWH(300, GuiStyle.DetailFontSize * 1 + 4));
+                            // TODO: processed in layout?
+                            dyn.BeforeCalcBounds();
+                            dyn.Bounds.CalcWorldBounds();
+                            dyn.AutoHeight();
+                            return dyn;
+                        },
                         "txt-result"
                     )
             )
@@ -84,6 +91,7 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                     )
             )
             .Add(
+                // Unreadable way to add right aligned multiple elements
                 new HorizontalLayout(capi, alignment: HorizontalLayoutAlignment.Right)
                     .Add(
                         new HorizontalLayout(capi)
@@ -93,17 +101,57 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                         )
                         .AddHorizontalSpace(20)
                     )
+            ).Add(
+                () => {
+                    var sld = new GuiElementSlider(capi, null, ElementBounds.FixedSize(400, 26));
+                    sld.SetValues(5, 0, 10, 1);
+                    return sld;
+                },
+                "slider-1"
+            ).Add(
+                () => { var elem = new GuiElementSwitch(capi, null, ElementBounds.FixedSize(26, 26)); elem.SetValue(false); return elem; },
+                "switch-1"
+            )
+            .Add(
+                new HorizontalLayout(capi)
+                    .Add(
+                        () => {
+                            var elem = new GuiElementDropDown(
+                                capi,
+                                ["val1", "val2"],
+                                ["name1", "name3"],
+                                0,
+                                null,
+                                bounds: ElementBounds.FixedSize(26, 26),
+                                font: CairoFont.WhiteDetailText(),
+                                false
+                            );
+                            return elem;
+                        },
+                        "dropdown-1"
+                    )
+                    .Add(
+                        () => {
+                            var elem = new GuiElementDropDown(
+                                capi,
+                                ["val1", "val2"],
+                                ["name1", "name2"],
+                                0,
+                                null,
+                                bounds: ElementBounds.FixedSize(26, 26),
+                                font: CairoFont.WhiteDetailText(),
+                                true
+                            );
+                            return elem;
+                        },
+                        "dropdown0"
+                    )
             )
             .Add(
                 GetItemStackTestLayout(capi, Patcher1.previousStockInfo?.GetInventoryRemoteTrader(capi))
             );
 
         rootLayout.SetChildLayout(body);
-        var dyn = rootLayout.GetNamedElement<GuiElementDynamicText>("txt-result");
-        // DynamicText neeeds CalcWorldBounds before AutoHeight()
-        dyn.BeforeCalcBounds();
-        dyn.Bounds.CalcWorldBounds();
-        dyn.AutoHeight();
         SetupDialogWithRootLayout(rootLayout);
         rootLayout.ConnectToTitleBarClose(() => TryClose());
     }
@@ -118,7 +166,7 @@ public class GuiDialogTest1 : GuiDialogGeneric {
         }
 
         var isSelling = false;
-        var maxN = 5;
+        var maxN = 10;
 
         var layouts = new List<LayoutBase>();
 
@@ -136,8 +184,6 @@ public class GuiDialogTest1 : GuiDialogGeneric {
             var texts = new VerticalLayout(capi)
                 .Add(guiStd.TextAutoBoxSize(slotI.slot.GetStackName(), font: CairoFont.WhiteSmallishText()))
                 .Add(guiStd.TextAutoBoxSize($"x{slotI.slot.StackSize}", font: CairoFont.WhiteSmallText()));
-
-            //FormatTraderSlotDescription(capi, slotI.slot, isSelling, slotOneSideLength, width - slotOneSideLength);
             layouts.Add(
                 new HorizontalLayout(capi)
                 .Add(
@@ -145,7 +191,6 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                 )
                 .Add(
                     texts
-                //guiStd.StandardRichText(formatted, fixedWidth - slotOneSideLength)
                 )
                 .AddHorizontalSpace(20)
             );
@@ -160,7 +205,6 @@ public class GuiDialogTest1 : GuiDialogGeneric {
         }
 
         return rtnLayout;
-
     }
 
     protected void SetupDialogWithRootLayout(StandardRootLayout rootLayout) {

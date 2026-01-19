@@ -25,11 +25,17 @@ namespace MNGUITest {
 
         public override void StartPre(ICoreAPI api) {
             ModID = Mod.Info.ModID;
+
+#if DEBUG
+            Harmony.DEBUG = true;
+#endif
         }
 
         // Called on server and client
         // Useful for registering block/entity classes on both sides
         public override void Start(ICoreAPI api) {
+            //api.RegisterBlockClass();
+
             RegisterBlockClass<BlockItemTest>(api);
             RegisterBlockEntityClass<BEItemTest>(api);
 

@@ -7,6 +7,6 @@
   "version": "0.1.0",
   "dependencies": {
     "game": "",
-    "remotetradercheckmod": "0.4.3-dev.*"
+    "remotetradercheckmod": "0.4.3-dev.1"
   }
 }

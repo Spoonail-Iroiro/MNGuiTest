@@ -1,3 +1,5 @@
 {
-  "block-itemtestblock": "Item test block"
+  "block-itemtestblock": "Item test block",
+  "block-clientcommandblock-normal": "Command block (Client)",
+  "clientcommandblockmod:ingameerror-notclientcommand": "Not a client command: {0}"
 }
