@@ -226,4 +226,9 @@ public class GuiDialogTest1 : GuiDialogGeneric {
         SingleComposer = rootLayout.Layout(capi, this, "test1");
         var foundBounds = DebugUtil.SearchBoundsRecursive(SingleComposer.Bounds, "richtext1");
     }
+
+    public override void OnGuiOpened() {
+        SetupDialog();
+        base.OnGuiOpened();
+    }
 }

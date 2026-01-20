@@ -2,6 +2,8 @@
 using MNGUITest.BlockEntities;
 using MNGUITest.Blocks;
 using MNGUITest.GUI;
+using System.Collections.Generic;
+using System.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -48,39 +50,56 @@ namespace MNGUITest {
         }
 
         public override void StartClientSide(ICoreClientAPI api) {
+
+            var forms = new Dictionary<string, GuiDialog>() {
+                ["test1"] = new GuiDialogTest1("Test1", api),
+                ["test2"] = new GuiDialogTest2(api),
+                ["cont-test1"] = new GuiDialogMNContainerTest("Container", api)
+            };
+
+            var parsers = api.ChatCommands.Parsers;
             var rootCommand = api.ChatCommands
-                .Create("mngui-test")
+                .Create("testgui")
                 .RequiresPrivilege(Privilege.chat)
-                .RequiresPlayer();
-
-            var subCommand1 = rootCommand
-                .BeginSubCommand("test1")
+                .RequiresPlayer()
+                .WithArgs(parsers.WordRange("formname", forms.Keys.ToArray()))
                 .HandleWith(args => {
-                    if (test1Dialog == null) {
-                        test1Dialog = new GuiDialogTest1("Test1", api);
-                    }
-                    if (!test1Dialog.IsOpened()) {
-                        test1Dialog.SetupDialog();
-                        test1Dialog.TryOpen();
-                    }
+                    var form = forms[args[0].ToString()!];
 
-                    return TextCommandResult.Success("");
+                    form.TryOpen();
+
+                    return TextCommandResult.Deferred;
                 });
 
-            GuiDialogTest2? test2Dialog = null;
+            //var subCommand1 = rootCommand
+            //    .BeginSubCommand("test1")
+            //    .WithArgs(parsers.Word("formname"))
+            //    .HandleWith(args => {
+            //        //if (test1Dialog == null) {
+            //        //    test1Dialog = ;
+            //        //}
+            //        if (!test1Dialog.IsOpened()) {
+            //            test1Dialog.SetupDialog();
+            //            test1Dialog.TryOpen();
+            //        }
 
-            var subCommand2 = rootCommand
-                .BeginSubCommand("test2")
-                .HandleWith(args => {
-                    if (test2Dialog == null) {
-                        test2Dialog = new(api);
-                    }
+            //        return TextCommandResult.Success("");
+            //    });
 
-                    if (!test2Dialog.IsOpened()) {
-                        test2Dialog.TryOpen();
-                    }
-                    return TextCommandResult.Success("");
-                });
+            //GuiDialogTest2? test2Dialog = null;
+
+            //var subCommand2 = rootCommand
+            //    .BeginSubCommand("test2")
+            //    .HandleWith(args => {
+            //        if (test2Dialog == null) {
+            //            test2Dialog = new(api);
+            //        }
+
+            //        if (!test2Dialog.IsOpened()) {
+            //            test2Dialog.TryOpen();
+            //        }
+            //        return TextCommandResult.Success("");
+            //    });
         }
 
         public override void Dispose() {
