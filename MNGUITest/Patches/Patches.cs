@@ -3,6 +3,7 @@ using RemoteTraderCheckMod.GUI;
 using RemoteTraderCheckMod.Core;
 using System.Collections.Generic;
 using System.Linq;
+using Vintagestory.API.Client;
 
 namespace MNGUITest.Patches;
 
@@ -12,5 +13,13 @@ public class Patcher1 {
 
     public static void Prefix(TraderStockInfo traderStockInfo) {
         previousStockInfo = traderStockInfo;
+    }
+}
+
+
+public class GuiScreenConnectingServerLogAddedPatcher {
+    public static void Prefix(string message, string ___prevText, GuiComposer ___ElementComposer) {
+        GuiElementDynamicText textElem = ___ElementComposer.GetDynamicText("centertext");
+        var mes = message;
     }
 }

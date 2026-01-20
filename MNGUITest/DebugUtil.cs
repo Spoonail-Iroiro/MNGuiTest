@@ -20,6 +20,8 @@ public class DebugUtil {
     public static string GetBoundsTree(ElementBounds bounds, StringBuilder? sb = null, int hie = 0, bool isInconsistentParent = false) {
         if (sb == null) {
             sb = new StringBuilder();
+            // For avoid misreading logging
+            sb.AppendLine("");
         }
 
         for (var i = 0; i < hie; ++i) {

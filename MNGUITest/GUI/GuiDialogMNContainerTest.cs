@@ -4,6 +4,7 @@ using MNGUITest.MNGUI.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
+using MNGUI.Extensions;
 
 namespace MNGUITest.GUI;
 public class GuiDialogMNContainerTest : GuiDialogGeneric {
@@ -85,15 +86,53 @@ public class GuiDialogMNContainerTest : GuiDialogGeneric {
         var container = SingleComposer.GetElement<MNGuiElementContainer>("scroll-content")!;
 
         var rootBound = ElementBounds.FixedSize(10, 10).WithSizing(ElementSizing.FitToChildren);
+        rootBound.Name = "bounds-containerroot";
+
+        var elements = new List<GuiElement>();
 
         var elem = guiStd.TextAutoBoxSize("Hoge");
         rootBound.WithChild(elem.Bounds);
+        var l1RefBound = elem.Bounds;
+        elements.Add(elem);
 
-        container.Add(elem);
+        var dynText = """
+        My
+        Special
+        Dynamic
+        Text
+        """;
+        var elem2 = new GuiElementDynamicText(capi, dynText, CairoFont.WhiteDetailText(), l1RefBound.CopyOffsetedSibling());
+        rootBound.WithChild(elem2.Bounds);  // CopyOffsetedSibling doesn't make sibling???
+        elem2.Bounds.fixedWidth = 50;
+        elem2.Bounds.CalcWorldBounds();
+        elem2.AutoHeight();
+        elem2.Bounds.CalcWorldBounds();
+        elem2.Bounds.FitToChildrenFixedRightOf(elem.Bounds);
+        elements.Add(elem2);
+
+        var elem2_2 = new GuiElementDynamicText(capi, dynText, CairoFont.WhiteDetailText(), l1RefBound.CopyOffsetedSibling());
+        rootBound.WithChild(elem2_2.Bounds);
+        elem2_2.Bounds.fixedWidth = 50;
+        elem2_2.Bounds.fixedHeight = 50;
+        elem2_2.Bounds.FitToChildrenFixedRightOf(elem2.Bounds);
+        elements.Add(elem2_2);
+
+        var elem3 = guiStd.TextAutoBoxSize("Fuga");
+        rootBound.WithChild(elem3.Bounds);
+        elem3.Bounds.FitToChildrenFixedUnder(elem.Bounds);
+        elements.Add(elem3);
+
+
+        foreach (var element in elements) {
+            container.Add(element);
+        }
 
         container.SetChildBound(rootBound);
 
         SingleComposer.Compose();
+
+        var boundsInfo = DebugUtil.GetBoundsTree(container.Bounds);
+        capi.Logger.Event(boundsInfo);
     }
 
     public override void OnGuiOpened() {
