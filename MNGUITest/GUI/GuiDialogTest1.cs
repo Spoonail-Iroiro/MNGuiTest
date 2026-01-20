@@ -107,10 +107,21 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                     sld.SetValues(5, 0, 10, 1);
                     return sld;
                 },
-                "slider-1"
+                "slider1"
             ).Add(
                 () => { var elem = new GuiElementSwitch(capi, null, ElementBounds.FixedSize(26, 26)); elem.SetValue(false); return elem; },
-                "switch-1"
+                "switch1"
+            ).Add(
+                () => {
+                    var elem = new GuiElementTextArea(
+                        capi,
+                        bounds: ElementBounds.FixedSize(400, 500),
+                        OnTextChanged: null,
+                        font: CairoFont.WhiteDetailText()
+                    );
+                    return elem;
+                },
+                "text2"
             )
             .Add(
                 new HorizontalLayout(capi)
@@ -122,7 +133,7 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                                 ["name1", "name3"],
                                 0,
                                 null,
-                                bounds: ElementBounds.FixedSize(26, 26),
+                                bounds: ElementBounds.FixedSize(150, 26),
                                 font: CairoFont.WhiteDetailText(),
                                 false
                             );
@@ -138,14 +149,17 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                                 ["name1", "name2"],
                                 0,
                                 null,
-                                bounds: ElementBounds.FixedSize(26, 26),
+                                bounds: ElementBounds.FixedSize(150, 26),
                                 font: CairoFont.WhiteDetailText(),
                                 true
                             );
                             return elem;
                         },
-                        "dropdown0"
+                        "dropdown-2"
                     )
+            )
+            .Add(
+                new GuiElementToggleButton(capi, "", "Hoge", CairoFont.ButtonText(), OnToggled: null, ElementBounds.FixedSize(100, 26), true)
             )
             .Add(
                 GetItemStackTestLayout(capi, Patcher1.previousStockInfo?.GetInventoryRemoteTrader(capi))
