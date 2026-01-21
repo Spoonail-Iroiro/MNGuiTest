@@ -31,7 +31,15 @@ public class GuiDialogMNContainerTest : GuiDialogGeneric {
         scrollBarBounds.Name = "bounds-scroll-bar";
         scrollBarBounds.RightOf(insetBounds, 3);
 
-        var clipBounds = insetBounds.ForkContainingChild(GuiStyle.HalfPadding, GuiStyle.HalfPadding, GuiStyle.HalfPadding, GuiStyle.HalfPadding);
+        // Bounds to add paddings between the inset and the clip
+        // Adding paddings to the inset doesnt work: inset drawing breaks
+        // TODO: Try adding paddings to the clip - but doesn't sound right
+        var clipParentBounds = insetBounds.ForkContainingChild();
+        clipParentBounds.Name = "bounds-clipparent";
+        clipParentBounds.WithFixedPadding(GuiStyle.HalfPadding);
+        clipParentBounds.horizontalSizing = ElementSizing.FitToChildren;
+
+        var clipBounds = clipParentBounds.ForkContainingChild();
         clipBounds.Name = "bounds-clip";
         clipBounds.horizontalSizing = ElementSizing.FitToChildren;
         //insetBounds.WithChild(clipBounds);
@@ -47,12 +55,17 @@ public class GuiDialogMNContainerTest : GuiDialogGeneric {
             .BeginChildElements(bgBounds) // Begin bgBounds child
                 .AddInset(insetBounds, 3)
                 .BeginChildElements() // Begin insetBounds child
-                    .BeginClip(clipBounds) // Begin clipBounds child (auto)
-                        .AddInteractiveElement(new MNGuiElementContainer(capi, containerBounds), "scroll-content")
-                    .EndClip()
+                    .BeginChildElements(clipParentBounds) // Begin clipParentBounds (now child of insetBounds) child
+                        .BeginClip(clipBounds) // Begin clipBounds child (auto)
+                            .AddInteractiveElement(new MNGuiElementContainer(capi, containerBounds), "scroll-content")
+                        .EndClip()
+                    .EndChildElements()
                 .EndChildElements()
                 .AddVerticalScrollbar(newValue => { }, scrollBarBounds, "scroll-bar")
             .EndChildElements();
+
+        var boundsInfo = DebugUtil.GetBoundsTree(composer.Bounds);
+        capi.Logger.Event(boundsInfo);
 
         // Scroll bar setting
 
@@ -106,16 +119,8 @@ public class GuiDialogMNContainerTest : GuiDialogGeneric {
         elem2.Bounds.fixedWidth = 50;
         elem2.Bounds.CalcWorldBounds();
         elem2.AutoHeight();
-        elem2.Bounds.CalcWorldBounds();
         elem2.Bounds.FitToChildrenFixedRightOf(elem.Bounds);
         elements.Add(elem2);
-
-        var elem2_2 = new GuiElementDynamicText(capi, dynText, CairoFont.WhiteDetailText(), l1RefBound.CopyOffsetedSibling());
-        rootBound.WithChild(elem2_2.Bounds);
-        elem2_2.Bounds.fixedWidth = 50;
-        elem2_2.Bounds.fixedHeight = 50;
-        elem2_2.Bounds.FitToChildrenFixedRightOf(elem2.Bounds);
-        elements.Add(elem2_2);
 
         var elem3 = guiStd.TextAutoBoxSize("Fuga");
         rootBound.WithChild(elem3.Bounds);
@@ -131,7 +136,7 @@ public class GuiDialogMNContainerTest : GuiDialogGeneric {
 
         SingleComposer.Compose();
 
-        var boundsInfo = DebugUtil.GetBoundsTree(container.Bounds);
+        var boundsInfo = DebugUtil.GetBoundsTree(SingleComposer.Bounds);
         capi.Logger.Event(boundsInfo);
     }
 
