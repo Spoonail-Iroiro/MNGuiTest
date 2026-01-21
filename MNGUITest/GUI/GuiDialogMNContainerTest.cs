@@ -114,9 +114,8 @@ public class GuiDialogMNContainerTest : GuiDialogGeneric {
         Dynamic
         Text
         """;
-        var elem2 = new GuiElementDynamicText(capi, dynText, CairoFont.WhiteDetailText(), l1RefBound.CopyOffsetedSibling());
-        rootBound.WithChild(elem2.Bounds);  // CopyOffsetedSibling doesn't make sibling???
-        elem2.Bounds.fixedWidth = 50;
+        var elem2 = new GuiElementDynamicText(capi, dynText, CairoFont.WhiteDetailText(), ElementBounds.FixedSize(100, 900));
+        rootBound.WithChild(elem2.Bounds);
         elem2.Bounds.CalcWorldBounds();
         elem2.AutoHeight();
         elem2.Bounds.FitToChildrenFixedRightOf(elem.Bounds);
@@ -126,6 +125,82 @@ public class GuiDialogMNContainerTest : GuiDialogGeneric {
         rootBound.WithChild(elem3.Bounds);
         elem3.Bounds.FitToChildrenFixedUnder(elem.Bounds);
         elements.Add(elem3);
+
+        {
+            var layout1 = new GuiElementParent(capi, GuiStd.ElementBoundsFitToChildren());
+            rootBound.WithChild(layout1.Bounds);
+            layout1.Bounds.FitToChildrenFixedUnder(elem3.Bounds);
+            elements.Add(layout1);
+
+            var layout1_1 = new GuiElementParent(capi, GuiStd.ElementBoundsFitToChildren());
+            layout1.Bounds.WithChild(layout1_1.Bounds);
+            elements.Add(layout1_1);
+
+            GuiElement? elem_l1_1_e1 = null;
+            {
+                var bounds_l1 = ElementBounds.FixedSize(100, 30);
+                var elem_l1 = new GuiElementTextButton(capi, "Button1", CairoFont.ButtonText(), CairoFont.ButtonText(), null, bounds_l1);
+                layout1_1.Bounds.WithChild(elem_l1.Bounds);
+                elements.Add(elem_l1);
+                elem_l1.BeforeCalcBounds();
+                elem_l1.Bounds.CalcWorldBounds();
+                elem_l1_1_e1 = elem_l1;
+            }
+
+            GuiElement? elem_l1_1_e2 = null;
+            {
+                var bounds_l1 = ElementBounds.FixedSize(70, 30);
+                var elem_l1 = new GuiElementTextButton(capi, "Button1", CairoFont.ButtonText(), CairoFont.ButtonText(), null, bounds_l1);
+                layout1_1.Bounds.WithChild(elem_l1.Bounds);
+                elements.Add(elem_l1);
+                elem_l1.BeforeCalcBounds();
+                elem_l1.Bounds.CalcWorldBounds();
+
+                elem_l1.Bounds.FitToChildrenFixedRightOf(elem_l1_1_e1.Bounds);
+
+                elem_l1_1_e2 = elem_l1;
+            }
+
+            layout1_1.BeforeCalcBounds();
+            layout1_1.Bounds.CalcWorldBounds();
+
+
+            var layout1_2 = new GuiElementParent(capi, GuiStd.ElementBoundsFitToChildren());
+            layout1.Bounds.WithChild(layout1_2.Bounds);
+            elements.Add(layout1_2);
+
+            GuiElement? elem_l1_2_e1 = null;
+            {
+                var bounds_l1 = ElementBounds.FixedSize(50, 30);
+                var elem_l1 = new GuiElementTextButton(capi, "yes", CairoFont.ButtonText(), CairoFont.ButtonText(), null, bounds_l1);
+                layout1_2.Bounds.WithChild(elem_l1.Bounds);
+                elements.Add(elem_l1);
+                elem_l1.BeforeCalcBounds();
+                elem_l1.Bounds.CalcWorldBounds();
+                elem_l1_2_e1 = elem_l1;
+            }
+
+            GuiElement? elem_l1_2_e2 = null;
+            {
+                var bounds_l1 = ElementBounds.FixedSize(70, 30);
+                var elem_l1 = new GuiElementTextButton(capi, "no", CairoFont.ButtonText(), CairoFont.ButtonText(), null, bounds_l1);
+                layout1_2.Bounds.WithChild(elem_l1.Bounds);
+                elements.Add(elem_l1);
+                elem_l1.BeforeCalcBounds();
+                elem_l1.Bounds.CalcWorldBounds();
+
+                elem_l1.Bounds.FitToChildrenFixedRightOf(elem_l1_2_e1.Bounds);
+
+                elem_l1_2_e2 = elem_l1;
+            }
+
+            layout1_2.BeforeCalcBounds();
+            layout1_2.Bounds.CalcWorldBounds();
+            layout1_2.Bounds.FitToChildrenFixedRightOf(layout1_1.Bounds);
+
+            layout1.BeforeCalcBounds();
+            layout1.Bounds.CalcWorldBounds();
+        }
 
 
         foreach (var element in elements) {

@@ -53,7 +53,7 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                 new HorizontalLayout(capi)
                     .Add(
                         () => {
-                            var dyn = new GuiElementDynamicText(capi, "placeholder\nfoo\nbar", font: CairoFont.WhiteDetailText(), GuiStd.ElementBoundsWH(300, GuiStyle.DetailFontSize * 1 + 4));
+                            var dyn = new GuiElementDynamicText(capi, "placeholder\nfoo\nbar", font: CairoFont.WhiteDetailText(), ElementBounds.FixedSize(300, GuiStyle.DetailFontSize * 1 + 4));
                             // TODO: processed in layout?
                             dyn.BeforeCalcBounds();
                             dyn.Bounds.CalcWorldBounds();
@@ -96,7 +96,7 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                     .Add(
                         new HorizontalLayout(capi)
                         .Add(
-                            new GuiElementTextButton(capi, "Button", CairoFont.ButtonText(), CairoFont.ButtonText(), () => true, GuiStd.ElementBoundsWH(100, 24)),
+                            new GuiElementTextButton(capi, "Button", CairoFont.ButtonText(), CairoFont.ButtonText(), () => true, ElementBounds.FixedSize(100, 24)),
                             "btn-click"
                         )
                         .AddHorizontalSpace(20)
