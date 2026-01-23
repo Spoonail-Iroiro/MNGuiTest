@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
 using MNGUI.Extensions;
+using MNGUITest.MNGUI.GUIElements.Layout;
 
 namespace MNGUITest.GUI;
 public class GuiDialogMNContainerTest : GuiDialogGeneric {
@@ -132,7 +133,7 @@ public class GuiDialogMNContainerTest : GuiDialogGeneric {
             layout1.Bounds.FitToChildrenFixedUnder(elem3.Bounds);
             elements.Add(layout1);
 
-            var layout1_1 = new GuiElementParent(capi, GuiStd.ElementBoundsFitToChildren());
+            var layout1_1 = new GuiElementDebugHorizontalLayout(capi, GuiStd.ElementBoundsFitToChildren());
             layout1.Bounds.WithChild(layout1_1.Bounds);
             elements.Add(layout1_1);
 
