@@ -26,6 +26,11 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
                 new HorizontalLayout(capi)
                 .Add(guiStd.TextAutoBoxSize("123"))
                 .Add(guiStd.TextAutoBoxSize("456"))
+            )
+            .Add(
+                new HorizontalLayout(capi)
+                .Add(new GuiElementTextInput(capi, ElementBounds.FixedSize(100, 24), null, CairoFont.TextInput()))
+                .Add(guiStd.TextAutoBoxSize("456"))
             );
 
         RootLayout.SetChildLayout(layout);
