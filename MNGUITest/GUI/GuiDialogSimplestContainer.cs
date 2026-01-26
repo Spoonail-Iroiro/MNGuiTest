@@ -68,9 +68,19 @@ public class GuiDialogSimplestContainer : GuiDialogGeneric {
         SingleComposer = CreateCompoWithStandardLayout(400, "simplest-container");
 
         var container = SingleComposer.GetElement<GuiElementContainer>("container-main");
+        container.Tabbable = true;
 
-        var textInput = new GuiElementTextInput(capi, ElementBounds.Fixed(0, 0, 100, GuiStyle.DetailFontSize), null, CairoFont.WhiteDetailText());
+        var textInput = new GuiElementTextInput(capi, ElementBounds.Fixed(10, 10, 100, GuiStyle.SmallishFontSize), null, CairoFont.WhiteDetailText());
+        textInput.BeforeCalcBounds();
+        textInput.Bounds.CalcWorldBounds();
+        //var textInput = new GuiElementTextInput(capi, ElementBounds.Fixed(0, 0, 100, GuiStyle.DetailFontSize), null, CairoFont.WhiteDetailText());
         container.Add(textInput);
+
+        var text1 = new GuiElementStaticText(capi, "Foo", bounds: ElementBounds.Fixed(200, 0, 100, GuiStyle.SmallishFontSize), orientation: EnumTextOrientation.Left, font: CairoFont.WhiteSmallishText());
+        container.Add(text1);
+
+        var text2 = new GuiElementStaticText(capi, "Bar", bounds: ElementBounds.Fixed(0, 200, 100, GuiStyle.SmallishFontSize), orientation: EnumTextOrientation.Left, font: CairoFont.WhiteSmallishText());
+        container.Add(text2);
 
         SingleComposer.Compose();
 

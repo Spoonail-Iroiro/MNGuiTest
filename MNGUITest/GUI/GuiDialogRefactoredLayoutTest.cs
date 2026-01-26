@@ -16,7 +16,7 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
         RootLayout = new StandardRootLayout();
         var guiStd = new GuiStd(capi);
 
-        var layout = new VerticalLayout(capi)
+        var layout = new VerticalLayout(capi, 5)
             .Add(
                 new HorizontalLayout(capi)
                 .Add(guiStd.TextAutoBoxSize("Foo"))
@@ -31,6 +31,15 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
                 new HorizontalLayout(capi)
                 .Add(new GuiElementTextInput(capi, ElementBounds.FixedSize(100, 24), null, CairoFont.TextInput()))
                 .Add(guiStd.TextAutoBoxSize("456"))
+            )
+            .Add(
+                new GuiElementTextInput(capi, ElementBounds.FixedSize(100, 24), null, CairoFont.TextInput())
+            )
+            .Add(
+                new GuiElementTextInput(capi, ElementBounds.FixedSize(100, 24), null, CairoFont.TextInput())
+            )
+            .Add(
+                new GuiElementTextInput(capi, ElementBounds.FixedSize(100, 24), null, CairoFont.TextInput())
             );
 
         RootLayout.SetChildLayout(layout);

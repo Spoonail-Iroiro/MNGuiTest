@@ -70,8 +70,10 @@ public class GuiDialogSimplest : GuiDialogGeneric {
         SingleComposer = CreateCompoWithStandardLayout(400);
 
         var container = SingleComposer.GetElement<GuiElementContainer>("container-main");
+        container.Tabbable = true;
 
-        var textInput = new GuiElementTextInput(capi, ElementBounds.Fixed(0, 0, 100, GuiStyle.DetailFontSize), null, CairoFont.WhiteDetailText());
+        var textInput = new GuiElementTextInput(capi, ElementBounds.Fixed(10, 10, 100, GuiStyle.SmallishFontSize), null, CairoFont.WhiteDetailText());
+        //var textInput = new GuiElementTextInput(capi, ElementBounds.Fixed(0, 0, 100, GuiStyle.DetailFontSize), null, CairoFont.WhiteDetailText());
         container.Add(textInput);
 
         SingleComposer.Compose();
