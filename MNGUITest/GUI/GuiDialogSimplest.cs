@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using MNGUI.GUI.MNGui;
 using MNGUI.GUIElements;
-using MNGUITest.MNGUI.Extensions;
 using Vintagestory.API.Client;
 using MNGUI.Extensions;
 using System.Text;
@@ -9,7 +8,7 @@ using System.Text;
 namespace MNGUITest.GUI;
 public class GuiDialogSimplest : GuiDialogGeneric {
     public GuiDialogSimplest(string DialogTitle, ICoreClientAPI capi) : base(DialogTitle, capi) {
-        SetupDialog();
+        //SetupDialog();
     }
 
     public GuiComposer CreateCompoWithStandardLayout(int fixedHeight) {
@@ -24,20 +23,21 @@ public class GuiDialogSimplest : GuiDialogGeneric {
         clientAreaBounds.BothSizing = ElementSizing.FitToChildren;
 
         // DynamicText is simply unable to auto wrap properly. Use RichText, or just use it with one-line
-        var dynText = """
-            My
-            Special
-            Dynamic
-            Text
-            """;
-        var elem1 = new GuiElementDynamicText(capi, dynText, CairoFont.WhiteSmallishText(), ElementBounds.FixedSize(900, 200));
+        //var dynText = """
+        //    My
+        //    Special
+        //    Dynamic
+        //    Text
+        //    """;
+        //var elem1 = new GuiElementDynamicText(capi, dynText, CairoFont.WhiteSmallishText(), ElementBounds.FixedSize(900, 200));
+        var elem1 = new GuiElementContainer(capi, ElementBounds.FixedSize(200, 400));
 
         var composer = capi.Gui.CreateCompo(DialogTitle, dialogBounds)
             .AddShadedDialogBG(bgBounds)
             .AddDialogTitleBar(DialogTitle, () => TryClose())
             .BeginChildElements(bgBounds) // Begin bgBounds child
                 .BeginChildElements(clientAreaBounds)
-                    .AddInteractiveElement(elem1, "dyntext-e1")
+                    .AddInteractiveElement(elem1, "container-main")
                 .EndChildElements()
             //.AddInteractiveElement(new MNGuiElementContainer(capi, containerBounds), "scroll-content")
             .EndChildElements();
@@ -69,21 +69,12 @@ public class GuiDialogSimplest : GuiDialogGeneric {
     public void SetupDialog() {
         SingleComposer = CreateCompoWithStandardLayout(400);
 
+        var container = SingleComposer.GetElement<GuiElementContainer>("container-main");
+
+        var textInput = new GuiElementTextInput(capi, ElementBounds.Fixed(0, 0, 100, GuiStyle.DetailFontSize), null, CairoFont.WhiteDetailText());
+        container.Add(textInput);
+
         SingleComposer.Compose();
-
-        var sb = new StringBuilder();
-        sb.AppendLine("My");
-        sb.AppendLine("Special");
-        for (int i = 0; i < 10; ++i) {
-            sb.Append("0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789");
-        }
-        sb.AppendLine();
-        sb.AppendLine("Dynamic");
-        sb.AppendLine("Text");
-
-        var dynTextElem = SingleComposer.GetElement<GuiElementDynamicText>("dyntext-e1");
-
-        dynTextElem.SetNewText(sb.ToString(), true, false, false);
 
         var boundsInfo = DebugUtil.GetBoundsTree(SingleComposer.Bounds);
         capi.Logger.Event(boundsInfo);

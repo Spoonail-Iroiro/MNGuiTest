@@ -31,6 +31,9 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
         RootLayout.SetChildLayout(layout);
         ClearComposers();
         SingleComposer = RootLayout.Layout(capi, this, "refactored-layout-test");
+
+        var boundsHie = DebugUtil.GetBoundsTree(SingleComposer.Bounds);
+        capi.Logger.Event(boundsHie);
     }
 
     public override void OnGuiOpened() {

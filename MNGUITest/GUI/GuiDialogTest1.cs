@@ -10,7 +10,7 @@ using Vintagestory.GameContent;
 namespace MNGUITest.GUI;
 public class GuiDialogTest1 : GuiDialogGeneric {
     public GuiDialogTest1(string DialogTitle, ICoreClientAPI capi) : base(DialogTitle, capi) {
-        SetupDialog();
+        //SetupDialog();
     }
 
     public void SetupDialog() {
@@ -99,7 +99,6 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                             new GuiElementTextButton(capi, "Button", CairoFont.ButtonText(), CairoFont.ButtonText(), () => true, ElementBounds.FixedSize(100, 24)),
                             "btn-click"
                         )
-                        .AddHorizontalSpace(20)
                     )
             ).Add(
                 () => {
