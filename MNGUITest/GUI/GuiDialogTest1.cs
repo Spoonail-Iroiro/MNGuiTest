@@ -167,7 +167,7 @@ public class GuiDialogTest1 : GuiDialogGeneric {
 
         rootLayout.SetChildLayout(body);
         SetupDialogWithRootLayout(rootLayout);
-        rootLayout.ConnectToTitleBarClose(() => TryClose());
+        //rootLayout.ConnectToTitleBarClose(() => TryClose());
     }
 
     protected LayoutBase GetItemStackTestLayout(
