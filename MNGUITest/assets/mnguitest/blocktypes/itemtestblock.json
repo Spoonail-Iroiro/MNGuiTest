@@ -1,0 +1,10 @@
+{
+  "code": "itemtestblock",
+  "class": "mnguitest.BlockItemTest",
+  "entityClass": "mnguitest.BEItemTest",
+  "creativeinventory": { "general": ["*"] },
+  "shape": { "base": "game:block/basic/cube" },
+  "textures": {
+    "all": { "base": "game:block/wallpaper/walnut" }
+  }
+}
