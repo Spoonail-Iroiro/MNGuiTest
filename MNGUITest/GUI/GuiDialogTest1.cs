@@ -1,6 +1,6 @@
 ﻿using MNGUI.GUI.MNGui;
 using MNGUI.Layouts;
-using MNGUI.RootLayouts;
+using MNGUI.DialogBuilders;
 using MNGUITest.Patches;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ public class GuiDialogTest1 : GuiDialogGeneric {
     }
 
     public void SetupDialog() {
-        var rootLayout = new StandardRootLayout();
+        var rootLayout = new StandardDialogBuilder();
 
         var guiStd = new GuiStd(capi);
 
@@ -220,7 +220,7 @@ public class GuiDialogTest1 : GuiDialogGeneric {
         return rtnLayout;
     }
 
-    protected void SetupDialogWithRootLayout(StandardRootLayout rootLayout) {
+    protected void SetupDialogWithRootLayout(StandardDialogBuilder rootLayout) {
         ClearComposers();
         SingleComposer = rootLayout.Layout(capi, this, "test1");
         var foundBounds = DebugUtil.SearchBoundsRecursive(SingleComposer.Bounds, "richtext1");
