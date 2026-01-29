@@ -1,8 +1,8 @@
 ﻿using System;
 using HarmonyLib;
-using MNGUITest.BlockEntities;
-using MNGUITest.Blocks;
-using MNGUITest.GUI;
+using MNGuiTest.BlockEntities;
+using MNGuiTest.Blocks;
+using MNGuiTest.GUI;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
@@ -10,11 +10,11 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 using System.Text;
-using MNGUITest.Patches;
+using MNGuiTest.Patches;
 
-namespace MNGUITest;
+namespace MNGuiTest;
 
-public class MNGUITestModSystem : ModSystem {
+public class MNGuiTestModSystem : ModSystem {
     GuiDialogTest1? test1Dialog;
 
     public static string ModID { get; private set; } = "";

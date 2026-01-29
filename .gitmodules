@@ -1,0 +1,3 @@
+[submodule "MNGuiTest/MNGui"]
+	path = MNGuiTest/MNGui
+	url = https://github.com/Spoonail-Iroiro/MNGUI.git

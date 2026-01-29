@@ -1,10 +1,10 @@
-﻿using MNGUITest.BlockEntities;
+﻿using MNGuiTest.BlockEntities;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 
-namespace MNGUITest.Blocks;
+namespace MNGuiTest.Blocks;
 
 public class BlockItemTest : Block {
     public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel) {

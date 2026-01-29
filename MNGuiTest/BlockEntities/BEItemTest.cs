@@ -7,7 +7,7 @@ using RemoteTraderCheckMod.BlockEntities;
 using Vintagestory.API.Server;
 using Vintagestory.API.Config;
 
-namespace MNGUITest.BlockEntities;
+namespace MNGuiTest.BlockEntities;
 
 public class BEItemTest : BlockEntity {
     public override void Initialize(ICoreAPI api) {

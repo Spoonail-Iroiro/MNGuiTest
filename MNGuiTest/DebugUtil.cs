@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Text;
 using Vintagestory.API.Client;
 
-namespace MNGUITest;
+namespace MNGuiTest;
 public class DebugUtil {
     public static ElementBounds? SearchBoundsRecursive(ElementBounds rootBounds, string searchingNamePartial) {
         if (rootBounds.Name?.Contains(searchingNamePartial) == true) return rootBounds;
