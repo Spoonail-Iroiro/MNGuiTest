@@ -8,7 +8,7 @@ using Vintagestory.API.Client;
 using Vintagestory.GameContent;
 using MNGui;
 
-namespace MNGuiTest.GUI;
+namespace MNGuiTest.Gui;
 public class GuiDialogTest1 : GuiDialogGeneric {
     public GuiDialogTest1(string DialogTitle, ICoreClientAPI capi) : base(DialogTitle, capi) {
         //SetupDialog();

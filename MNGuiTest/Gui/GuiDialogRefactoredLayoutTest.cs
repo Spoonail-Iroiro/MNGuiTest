@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
 
-namespace MNGuiTest.GUI;
+namespace MNGuiTest.Gui;
 public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
     public StandardDialogBuilder? RootLayout { get; set; }
 
