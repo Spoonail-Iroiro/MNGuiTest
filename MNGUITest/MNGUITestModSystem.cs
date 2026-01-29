@@ -12,9 +12,9 @@ using Vintagestory.API.Server;
 using System.Text;
 using MNGUITest.Patches;
 
-namespace MNGUITest;
+namespace MNGuiTest;
 
-public class MNGUITestModSystem : ModSystem {
+public class MNGuiTestModSystem : ModSystem {
     GuiDialogTest1? test1Dialog;
 
     public static string ModID { get; private set; } = "";

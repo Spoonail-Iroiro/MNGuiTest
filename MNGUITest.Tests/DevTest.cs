@@ -1,4 +1,4 @@
-﻿namespace MNGUITest.Tests
+﻿namespace MNGuiTest.Tests
 {
     [TestClass]
     public sealed class Test1
