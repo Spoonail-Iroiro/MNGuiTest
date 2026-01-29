@@ -1,5 +1,5 @@
-﻿using MNGUI.Layouts;
-using MNGUI.DialogBuilders;
+﻿using MNGui.Layouts;
+using MNGui.DialogBuilders;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;

@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
-using MNGUI.GUI.MNGui;
-using MNGUI.GUIElements;
+using MNGui;
+using MNGui.GuiElements;
 using Vintagestory.API.Client;
-using MNGUI.Extensions;
+using MNGui.Extensions;
 using System.Text;
 
 namespace MNGUITest.GUI;
