@@ -1,14 +1,14 @@
 ﻿using MNGui;
 using MNGui.Layouts;
 using MNGui.DialogBuilders;
-using MNGUITest.Patches;
+using MNGuiTest.Patches;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.GameContent;
 using MNGui;
 
-namespace MNGUITest.GUI;
+namespace MNGuiTest.GUI;
 public class GuiDialogTest1 : GuiDialogGeneric {
     public GuiDialogTest1(string DialogTitle, ICoreClientAPI capi) : base(DialogTitle, capi) {
         //SetupDialog();

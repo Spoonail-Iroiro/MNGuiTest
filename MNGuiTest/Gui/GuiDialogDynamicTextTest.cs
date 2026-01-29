@@ -6,7 +6,7 @@ using Vintagestory.API.Client;
 using MNGui.Extensions;
 using System.Text;
 
-namespace MNGUITest.GUI;
+namespace MNGuiTest.GUI;
 public class GuiDialogDynamicTextTest : GuiDialogGeneric {
     public GuiDialogDynamicTextTest(string DialogTitle, ICoreClientAPI capi) : base(DialogTitle, capi) {
     }
