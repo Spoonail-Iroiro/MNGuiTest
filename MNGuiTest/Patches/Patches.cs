@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
 
-namespace MNGUITest.Patches;
+namespace MNGuiTest.Patches;
 
 [HarmonyPatch(typeof(GuiDialogTraderStockCheck), nameof(GuiDialogTraderStockCheck.ShowStockDialog))]
 public class Patcher1 {

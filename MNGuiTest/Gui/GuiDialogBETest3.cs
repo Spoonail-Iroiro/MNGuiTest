@@ -5,7 +5,7 @@ using System.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.MathTools;
 
-namespace MNGUITest.GUI;
+namespace MNGuiTest.GUI;
 public class GuiDialogBETest3 : GuiDialogBlockEntity {
     public GuiDialogBETest3(string dialogTitle, BlockPos blockEntityPos, ICoreClientAPI capi) : base(dialogTitle, blockEntityPos, capi) {
     }
