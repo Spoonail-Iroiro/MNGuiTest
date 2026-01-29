@@ -1,10 +1,10 @@
-﻿using MNGUI.GUI.MNGui;
-using MNGUI.GUIElements;
+﻿using MNGui;
+using MNGui.GuiElements;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
-using MNGUI.Extensions;
-using MNGUI.GUIElements.Layout;
+using MNGui.Extensions;
+using MNGui.GuiElements.Layout;
 
 namespace MNGUITest.GUI;
 public class GuiDialogMNContainerTest : GuiDialogGeneric {

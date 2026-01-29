@@ -53,18 +53,6 @@ public class MNGUITestModSystem : ModSystem {
     }
 
     public override void StartServerSide(ICoreServerAPI api) {
-        try {
-            throw new Exception($"Test exception");
-        }
-        catch (Exception ex) {
-            api.Logger.Error(ex);
-        }
-        var sb = new StringBuilder();
-        for (int i = 0; i < 10; ++i) {
-            sb.Append("0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789");
-        }
-
-        api.Logger.Event(sb.ToString());
     }
 
     public override void StartClientSide(ICoreClientAPI api) {
