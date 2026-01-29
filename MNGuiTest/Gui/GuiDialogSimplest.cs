@@ -5,7 +5,7 @@ using Vintagestory.API.Client;
 using MNGui.Extensions;
 using System.Text;
 
-namespace MNGuiTest.GUI;
+namespace MNGuiTest.Gui;
 public class GuiDialogSimplest : GuiDialogGeneric {
     public GuiDialogSimplest(string DialogTitle, ICoreClientAPI capi) : base(DialogTitle, capi) {
         //SetupDialog();

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
 
-namespace MNGuiTest.GUI;
+namespace MNGuiTest.Gui;
 public class GuiDialogSimplestContainer : GuiDialogGeneric {
     public GuiDialogSimplestContainer(string DialogTitle, ICoreClientAPI capi) : base(DialogTitle, capi) {
         //SetupDialog();

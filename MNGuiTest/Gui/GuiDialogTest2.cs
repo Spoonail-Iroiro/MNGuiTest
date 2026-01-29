@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
 
-namespace MNGuiTest.GUI;
+namespace MNGuiTest.Gui;
 public class GuiDialogTest2 : GuiDialog {
     public override string ToggleKeyCombinationCode => "demoscrollgui";
 
