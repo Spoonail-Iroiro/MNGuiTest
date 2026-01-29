@@ -1,9 +1,9 @@
 {
   "type": "code",
   "modid": "mnguitest",
-  "name": "MNGUITest",
-  "authors": ["Spoon", "Mononospace"],
-  "description": "MNGUI test",
+  "name": "MNGui Test",
+  "authors": [ "Spoon", "Mononospace" ],
+  "description": "Project for MNGui test. Not for general use.",
   "version": "0.1.0",
   "dependencies": {
     "game": "",
