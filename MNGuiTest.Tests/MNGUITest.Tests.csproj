@@ -57,7 +57,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\MNGUITest\MNGUITest.csproj" />
+    <ProjectReference Include="..\MNGuiTest\MNGuiTest.csproj" />
   </ItemGroup>
 
   <ItemGroup>
