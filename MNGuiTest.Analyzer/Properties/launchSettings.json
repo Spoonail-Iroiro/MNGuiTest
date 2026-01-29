@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "AnalyzerDebug": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\MNGuiTest\\MNGuiTest.csproj"
+    },
+    "Nouse": {
+      "commandName": "Project"
+    }
+  }
+}

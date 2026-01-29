@@ -72,6 +72,13 @@
     </AssemblyAttribute>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MNGuiTest.Analyzer\MNGuiTest.Analyzer.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Analyzer</OutputItemType>
+    </ProjectReference>
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="if not exist &quot;Properties/launchSettings.json&quot; (&#xA;    echo Creating launchsettings.json from template...&#xD;&#xA;    copy &quot;Properties\launchSettings.template.json&quot; &quot;Properties\launchSettings.json&quot;&#xA;) else (&#xA;    echo launchsettings.json already exists. Skipping.&#xA;)" />
   </Target>
