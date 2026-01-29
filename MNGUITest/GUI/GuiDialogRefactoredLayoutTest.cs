@@ -1,19 +1,19 @@
 ﻿using MNGUI.GUI.MNGui;
 using MNGUI.Layouts;
-using MNGUI.RootLayouts;
+using MNGUI.DialogBuilders;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
 
 namespace MNGUITest.GUI;
 public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
-    public StandardRootLayout? RootLayout { get; set; }
+    public StandardDialogBuilder? RootLayout { get; set; }
 
     public GuiDialogRefactoredLayoutTest(string DialogTitle, ICoreClientAPI capi) : base(DialogTitle, capi) {
     }
 
     public void SetupDialog() {
-        RootLayout = new StandardRootLayout();
+        RootLayout = new StandardDialogBuilder();
         var guiStd = new GuiStd(capi);
 
         var layout = new VerticalLayout(capi, 5)
