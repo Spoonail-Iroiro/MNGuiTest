@@ -7,9 +7,13 @@ using System.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.GameContent;
 using MNGui;
+using Vintagestory.API.Util;
+using MNGui.Std;
 
 namespace MNGuiTest.Gui;
 public class GuiDialogTest1 : GuiDialogGeneric {
+    StandardDialogController? dialogController;
+
     public GuiDialogTest1(string DialogTitle, ICoreClientAPI capi) : base(DialogTitle, capi) {
         //SetupDialog();
     }
@@ -17,7 +21,7 @@ public class GuiDialogTest1 : GuiDialogGeneric {
     public void SetupDialog() {
         var rootLayout = new StandardDialogBuilder();
 
-        var guiStd = new GuiStd(capi);
+        var guiStd = new ElementStd(capi);
 
         var body = new VerticalLayout(capi, 5)
             .Add(
@@ -51,18 +55,15 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                     .Add(guiStd.StandardRichText("<strong>Search Result</strong>", 300, font: CairoFont.WhiteSmallishText()))
             )
             .Add(
-                new HorizontalLayout(capi)
-                    .Add(
-                        () => {
-                            var dyn = new GuiElementDynamicText(capi, "placeholder\nfoo\nbar", font: CairoFont.WhiteDetailText(), ElementBounds.FixedSize(300, GuiStyle.DetailFontSize * 1 + 4));
-                            // TODO: processed in layout?
-                            dyn.BeforeCalcBounds();
-                            dyn.Bounds.CalcWorldBounds();
-                            dyn.AutoHeight();
-                            return dyn;
-                        },
-                        "txt-result"
-                    )
+                () => {
+                    var dyn = new GuiElementDynamicText(capi, "placeholder\nfoo\nbar", font: CairoFont.WhiteDetailText(), ElementBounds.FixedSize(300, GuiStyle.DetailFontSize * 1 + 4));
+                    // TODO: processed in layout?
+                    dyn.BeforeCalcBounds();
+                    dyn.Bounds.CalcWorldBounds();
+                    dyn.AutoHeight();
+                    return dyn;
+                },
+                "txt-result"
             )
             .Add(
                 new HorizontalLayout(capi, 10)
@@ -97,7 +98,7 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                     .Add(
                         new HorizontalLayout(capi)
                         .Add(
-                            new GuiElementTextButton(capi, "Button", CairoFont.ButtonText(), CairoFont.ButtonText(), () => true, ElementBounds.FixedSize(100, 24)),
+                            new GuiElementTextButton(capi, "Button", CairoFont.ButtonText(), CairoFont.ButtonText(), OnButtonClicked, ElementBounds.FixedSize(100, 24)),
                             "btn-click"
                         )
                     )
@@ -115,7 +116,7 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                 () => {
                     var elem = new GuiElementTextArea(
                         capi,
-                        bounds: ElementBounds.FixedSize(400, 500),
+                        bounds: ElementBounds.FixedSize(400, 100),
                         OnTextChanged: null,
                         font: CairoFont.WhiteDetailText()
                     );
@@ -167,14 +168,15 @@ public class GuiDialogTest1 : GuiDialogGeneric {
 
         rootLayout.SetChildLayout(body);
         SetupDialogWithRootLayout(rootLayout);
-        //rootLayout.ConnectToTitleBarClose(() => TryClose());
+
+        dialogController = new(capi, SingleComposer, rootLayout.ChildLayout);
     }
 
     protected LayoutBase GetItemStackTestLayout(
         ICoreClientAPI capi,
         InventoryTrader? inventory
     ) {
-        var guiStd = new GuiStd(capi);
+        var guiStd = new ElementStd(capi);
         if (inventory == null) {
             return new HorizontalLayout(capi).Add(guiStd.TextAutoBoxSize("No inventory to show"));
         }
@@ -230,5 +232,25 @@ public class GuiDialogTest1 : GuiDialogGeneric {
     public override void OnGuiOpened() {
         SetupDialog();
         base.OnGuiOpened();
+    }
+
+    public bool OnButtonClicked() {
+        capi.Logger.Event("Button clicked!");
+        var boundsTree = DebugUtil.GetBoundsTree(dialogController.Composer.Bounds);
+        capi.Logger.Event(boundsTree);
+
+        var dynText = dialogController.GetElement<GuiElementDynamicText>("txt-result");
+        if (dynText != null) {
+            var text = dynText.Text;
+            text += "\nNewLine!";
+            dynText.SetNewText(text, true, true);
+
+            dialogController.OnBoundsUpdated();
+        }
+        else {
+            capi.Logger.Warning($"txt-result not found!");
+        }
+
+        return true;
     }
 }
