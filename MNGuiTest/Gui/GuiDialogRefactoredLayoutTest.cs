@@ -65,7 +65,10 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
                 "container-sub"
             )
             .Add(
-                CreateInsetContainer()
+                CreateInsetClipContainer()
+            )
+            .Add(
+                new GuiElementTextButton(capi, "Push to clip", CairoFont.ButtonText(), CairoFont.ButtonText(), OnPushToClip, ElementBounds.FixedSize(100, 26))
             );
         //layout.CustomMinWidth = 500;
         //layout.CustomMinHeight = 500;
@@ -98,18 +101,63 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
 
 
         var insetLayout = new SimpleWrapperLayout(new MNGuiElementInset(capi, BoundsStd.FitToChildren()), "inset-e1");
-        var clipParentLayout = new SimpleWrapperLayout(new GuiElementDebugHorizontalLayout(capi, BoundsStd.FitToChildren().WithFixedPadding(5.0)));
+        var clipParentLayout = new SimpleWrapperLayout(new GuiElementDummy(capi, BoundsStd.FitToChildren().WithFixedPadding(5.0)));
         var containerLayout = new SingleLayout(new MNGuiElementLayoutContainer(capi, BoundsStd.FitToChildren(), initialLayout: contentLayout), "container-inset");
 
         insetLayout
-            .SetChild(
+            .Add(
                 clipParentLayout
-                    .SetChild(
+                    .Add(
                         containerLayout
                     )
             );
 
         return insetLayout;
+
+    }
+
+    private LayoutBase CreateInsetClipContainer() {
+        var elementStd = new ElementStd(capi);
+        var contentLayout = new VerticalLayout(capi)
+            .Add(
+                new HorizontalLayout(capi).Add(elementStd.TextAutoBoxSize("123")).Add(elementStd.TextAutoBoxSize("456"))
+            )
+            .Add(
+                new HorizontalLayout(capi).Add(elementStd.TextAutoBoxSize("ABCDEF")).Add(elementStd.TextAutoBoxSize("XYZ"))
+            );
+
+        var rowLayout = new HorizontalLayout(capi);
+
+        var insetLayout = new SimpleWrapperLayout(new MNGuiElementInset(capi, BoundsStd.FitToChildren()), "inset-e1");
+        var clipParentLayout = new SimpleWrapperLayout(new GuiElementDummy(capi, BoundsStd.FitToChildren().WithFixedPadding(5.0)));
+        var clipStartLayout = new SimpleWrapperLayout(new MNGuiElementClipStart(capi, ElementBounds.FixedSize(10, 100).WithSizing(ElementSizing.FitToChildren, ElementSizing.Fixed)));
+        var clipEndLayout = new SimpleWrapperLayout(new MNGuiElementClipEnd(capi));
+        var containerLayout = new SingleLayout(new MNGuiElementLayoutContainer(capi, BoundsStd.FitToChildren(), initialLayout: contentLayout), "container-insideclip");
+        var scrollbar = new MNGuiElementVerticalScrollbar(capi, ElementBounds.FixedSize(10, 110));
+        var scrollBarLayout = new SingleLayout(scrollbar);
+        scrollbar.SetViewAndContentBounds(clipStartLayout.Bounds, containerLayout.Bounds);
+
+        rowLayout
+            .Add(
+                insetLayout
+                    .Add(
+                        clipParentLayout
+                            .Add(
+                                clipStartLayout
+                                    .Add(
+                                        containerLayout
+                                    )
+                            )
+                            .Add(
+                                clipEndLayout
+                            )
+                    )
+            )
+            .Add(
+                scrollBarLayout
+            );
+
+        return rowLayout;
 
     }
 
@@ -143,6 +191,24 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
         //    dialogController.OnBoundsUpdated();
         //},
         //0);
+
+        return true;
+    }
+
+    bool OnPushToClip() {
+        if (dialogController == null) return false;
+
+        var layoutContainer = dialogController.GetElement<MNGuiElementLayoutContainer>("container-insideclip");
+
+        if (layoutContainer == null) {
+            capi.Logger.Warning($"Couldn't find container");
+            return false;
+        }
+
+        // Add post and update layout
+        posts.Add("Foo!");
+
+        UpdateContainerLayoutWithPosts(layoutContainer);
 
         return true;
     }

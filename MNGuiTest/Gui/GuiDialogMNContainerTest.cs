@@ -132,7 +132,7 @@ public class GuiDialogMNContainerTest : GuiDialogGeneric {
             layout1.Bounds.FitToChildrenFixedUnder(elem3.Bounds);
             elements.Add(layout1);
 
-            var layout1_1 = new GuiElementDebugHorizontalLayout(capi, BoundsStd.FitToChildren());
+            var layout1_1 = new GuiElementDummy(capi, BoundsStd.FitToChildren());
             layout1.Bounds.WithChild(layout1_1.Bounds);
             elements.Add(layout1_1);
 
