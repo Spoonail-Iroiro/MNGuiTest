@@ -16,6 +16,7 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
     List<string> posts = new List<string>();
 
     public GuiDialogRefactoredLayoutTest(string DialogTitle, ICoreClientAPI capi) : base(DialogTitle, capi) {
+
     }
 
     public void SetupDialog() {
@@ -58,7 +59,8 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
                 new GuiElementTextInput(capi, ElementBounds.FixedSize(100, 24), null, CairoFont.TextInput())
             )
             .Add(
-                new GuiElementTextButton(capi, "Button", CairoFont.ButtonText(), CairoFont.ButtonText(), OnButtonClicked, ElementBounds.FixedSize(100, 26))
+                new MNGuiElementTextButton(capi, "Button", ElementBounds.FixedSize(100, 26)),
+                "button-button"
             )
             .Add(
                 new MNGuiElementLayoutContainer(capi, BoundsStd.FitToChildren()),
@@ -68,7 +70,8 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
                 CreateInsetClipContainer()
             )
             .Add(
-                new GuiElementTextButton(capi, "Push to clip", CairoFont.ButtonText(), CairoFont.ButtonText(), OnPushToClip, ElementBounds.FixedSize(100, 26))
+                new MNGuiElementTextButton(capi, "Push to clip", ElementBounds.FixedSize(100, 26)),
+                "button-pushtoclip"
             );
         //layout.CustomMinWidth = 500;
         //layout.CustomMinHeight = 500;
@@ -81,6 +84,11 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
         capi.Logger.Event(boundsHie);
 
         dialogController = new StandardDialogController(capi, SingleComposer, layout);
+
+        var buttonButton = dialogController.GetElement<MNGuiElementTextButton>("button-button");
+        buttonButton!.EventClicked = OnButtonClicked;
+        var pushToClipButton = dialogController.GetElement<MNGuiElementTextButton>("button-pushtoclip");
+        pushToClipButton!.EventClicked = OnPushToClip;
     }
 
     public override void OnGuiOpened() {
@@ -130,7 +138,7 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
 
         var insetLayout = new SimpleWrapperLayout(new MNGuiElementInset(capi, BoundsStd.FitToChildren()), "inset-e1");
         var clipParentLayout = new SimpleWrapperLayout(new GuiElementDummy(capi, BoundsStd.FitToChildren().WithFixedPadding(5.0)));
-        var clipStartLayout = new SimpleWrapperLayout(new MNGuiElementClipStart(capi, ElementBounds.FixedSize(10, 100).WithSizing(ElementSizing.FitToChildren, ElementSizing.Fixed)));
+        var clipStartLayout = new SimpleWrapperLayout(new MNGuiElementClipStart(capi, ElementBounds.FixedSize(10, 10).WithSizing(ElementSizing.FitToChildren))).WithMaxHeight(100);
         var clipEndLayout = new SimpleWrapperLayout(new MNGuiElementClipEnd(capi));
         var containerLayout = new SingleLayout(new MNGuiElementLayoutContainer(capi, BoundsStd.FitToChildren(), initialLayout: contentLayout), "container-insideclip");
         var scrollbar = new MNGuiElementVerticalScrollbar(capi, ElementBounds.FixedSize(10, 110));
@@ -212,4 +220,11 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
 
         return true;
     }
+
+    /*
+    // Prevent close on ESC
+    public override bool OnEscapePressed() {
+        return false;
+    }
+    */
 }

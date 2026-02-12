@@ -65,6 +65,9 @@ public class MNGuiTestModSystem : ModSystem {
             ["simplest-container"] = new GuiDialogSimplestContainer("Simplest Container", api),
             ["dyntext"] = new GuiDialogDynamicTextTest("dyntext", api),
             ["refactored-layout"] = new GuiDialogRefactoredLayoutTest("Refactor", api),
+            ["debug-window"] = new GuiDialogDebugWindow("Debugging", api),
+            ["inset-container-samples"] = new GuiDialogInsetContainerSamples("Debugging", api),
+            ["test1-with-container"] = new GuiDialogTest1WithContainer("Test1WithContainer", api),
         };
 
         var parsers = api.ChatCommands.Parsers;

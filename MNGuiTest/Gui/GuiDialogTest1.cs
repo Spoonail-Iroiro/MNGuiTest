@@ -9,6 +9,7 @@ using Vintagestory.GameContent;
 using MNGui;
 using Vintagestory.API.Util;
 using MNGui.Std;
+using MNGui.GuiElements;
 
 namespace MNGuiTest.Gui;
 public class GuiDialogTest1 : GuiDialogGeneric {
@@ -20,9 +21,21 @@ public class GuiDialogTest1 : GuiDialogGeneric {
 
     public void SetupDialog() {
         var rootLayout = new StandardDialogBuilder();
-
         var guiStd = new ElementStd(capi);
 
+        var body = GetBody(capi);
+
+        rootLayout.SetChildLayout(body);
+        SetupDialogWithRootLayout(rootLayout);
+
+        dialogController = new(capi, SingleComposer, rootLayout.ChildLayout);
+
+        var button = dialogController.GetElement<MNGuiElementTextButton>("btn-click");
+        button.EventClicked = OnButtonClicked;
+    }
+
+    public static VerticalLayout GetBody(ICoreClientAPI capi) {
+        var guiStd = new ElementStd(capi);
         var body = new VerticalLayout(capi, 5)
             .Add(
                 new HorizontalLayout(capi)
@@ -98,7 +111,7 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                     .Add(
                         new HorizontalLayout(capi)
                         .Add(
-                            new GuiElementTextButton(capi, "Button", CairoFont.ButtonText(), CairoFont.ButtonText(), OnButtonClicked, ElementBounds.FixedSize(100, 24)),
+                            new MNGuiElementTextButton(capi, "Button", ElementBounds.FixedSize(100, 24)),
                             "btn-click"
                         )
                     )
@@ -166,13 +179,11 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                 GetItemStackTestLayout(capi, Patcher1.previousStockInfo?.GetInventoryRemoteTrader(capi))
             );
 
-        rootLayout.SetChildLayout(body);
-        SetupDialogWithRootLayout(rootLayout);
-
-        dialogController = new(capi, SingleComposer, rootLayout.ChildLayout);
+        return body;
     }
 
-    protected LayoutBase GetItemStackTestLayout(
+
+    protected static LayoutBase GetItemStackTestLayout(
         ICoreClientAPI capi,
         InventoryTrader? inventory
     ) {
