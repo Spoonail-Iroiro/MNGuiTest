@@ -4,6 +4,8 @@ using MNGui.GuiElements;
 using Vintagestory.API.Client;
 using MNGui.Extensions;
 using System.Text;
+using MNGui.Std;
+using MNGui.Util;
 
 namespace MNGuiTest.Gui;
 public class GuiDialogSimplest : GuiDialogGeneric {
@@ -30,7 +32,7 @@ public class GuiDialogSimplest : GuiDialogGeneric {
         //    Text
         //    """;
         //var elem1 = new GuiElementDynamicText(capi, dynText, CairoFont.WhiteSmallishText(), ElementBounds.FixedSize(900, 200));
-        var elem1 = new GuiElementContainer(capi, ElementBounds.FixedSize(200, 400));
+        var elem1 = new GuiElementContainer(capi, BoundsStd.FitToChildren());
 
         var composer = capi.Gui.CreateCompo(DialogTitle, dialogBounds)
             .AddShadedDialogBG(bgBounds)
@@ -68,13 +70,18 @@ public class GuiDialogSimplest : GuiDialogGeneric {
 
     public void SetupDialog() {
         SingleComposer = CreateCompoWithStandardLayout(400);
+        var elementStd = new ElementStd(capi);
 
         var container = SingleComposer.GetElement<GuiElementContainer>("container-main");
         container.Tabbable = true;
 
         var textInput = new GuiElementTextInput(capi, ElementBounds.Fixed(10, 10, 100, GuiStyle.SmallishFontSize), null, CairoFont.WhiteDetailText());
         //var textInput = new GuiElementTextInput(capi, ElementBounds.Fixed(0, 0, 100, GuiStyle.DetailFontSize), null, CairoFont.WhiteDetailText());
-        container.Add(textInput);
+        //container.Add(textInput);
+
+        var staticText = elementStd.TextAutoBoxSize("Hoge\n");
+        staticText.Bounds.WithFixedPosition(0, 0);
+        container.Add(staticText);
 
         SingleComposer.Compose();
 
