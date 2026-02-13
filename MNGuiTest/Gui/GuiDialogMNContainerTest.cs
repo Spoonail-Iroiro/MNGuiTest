@@ -1,10 +1,10 @@
-﻿using MNGui;
-using MNGui.GuiElements;
+﻿using MNGui.GuiElements;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
 using MNGui.Extensions;
 using MNGui.GuiElements.Layout;
+using MNGui.Std;
 
 namespace MNGuiTest.Gui;
 public class GuiDialogMNContainerTest : GuiDialogGeneric {
@@ -94,7 +94,7 @@ public class GuiDialogMNContainerTest : GuiDialogGeneric {
     public void SetupDialog() {
         SingleComposer = CreateCompoWithStandardLayout(400);
 
-        var guiStd = new GuiStd(capi);
+        var guiStd = new ElementStd(capi);
 
         var container = SingleComposer.GetElement<MNGuiElementContainer>("scroll-content")!;
 
@@ -127,12 +127,12 @@ public class GuiDialogMNContainerTest : GuiDialogGeneric {
         elements.Add(elem3);
 
         {
-            var layout1 = new GuiElementParent(capi, GuiStd.ElementBoundsFitToChildren());
+            var layout1 = new GuiElementParent(capi, BoundsStd.FitToChildren());
             rootBound.WithChild(layout1.Bounds);
             layout1.Bounds.FitToChildrenFixedUnder(elem3.Bounds);
             elements.Add(layout1);
 
-            var layout1_1 = new GuiElementDebugHorizontalLayout(capi, GuiStd.ElementBoundsFitToChildren());
+            var layout1_1 = new GuiElementDummy(capi, BoundsStd.FitToChildren());
             layout1.Bounds.WithChild(layout1_1.Bounds);
             elements.Add(layout1_1);
 
@@ -165,7 +165,7 @@ public class GuiDialogMNContainerTest : GuiDialogGeneric {
             layout1_1.Bounds.CalcWorldBounds();
 
 
-            var layout1_2 = new GuiElementParent(capi, GuiStd.ElementBoundsFitToChildren());
+            var layout1_2 = new GuiElementParent(capi, BoundsStd.FitToChildren());
             layout1.Bounds.WithChild(layout1_2.Bounds);
             elements.Add(layout1_2);
 

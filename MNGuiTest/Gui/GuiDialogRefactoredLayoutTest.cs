@@ -1,20 +1,37 @@
-﻿using MNGui;
-using MNGui.Layouts;
+﻿using MNGui.Layouts;
 using MNGui.DialogBuilders;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
+using MNGui.GuiElements;
+using MNGui.Std;
+using MNGui.GuiElements.Layout;
 
 namespace MNGuiTest.Gui;
 public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
-    public StandardDialogBuilder? RootLayout { get; set; }
+    public StandardDialogBuilder? DialogBuilder { get; set; }
+
+    StandardDialogController? dialogController;
+
+    List<string> posts = new List<string>();
 
     public GuiDialogRefactoredLayoutTest(string DialogTitle, ICoreClientAPI capi) : base(DialogTitle, capi) {
+
     }
 
     public void SetupDialog() {
-        RootLayout = new StandardDialogBuilder();
-        var guiStd = new GuiStd(capi);
+        DialogBuilder = new StandardDialogBuilder();
+        var guiStd = new ElementStd(capi);
+
+        //var layout = new HorizontalLayout(capi, 5)
+        //    .Add(guiStd.TextAutoBoxSize("Foo"))
+        //    .Add(guiStd.TextAutoBoxSize("Bar"))
+        //    .Add(guiStd.TextAutoBoxSize("Buff"))
+        //    .Add(
+        //        new HorizontalLayout(capi, 10)
+        //        .Add(guiStd.TextAutoBoxSize("1234"))
+        //        .Add(guiStd.TextAutoBoxSize("234"))
+        //    );
 
         var layout = new VerticalLayout(capi, 5)
             .Add(
@@ -40,14 +57,38 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
             )
             .Add(
                 new GuiElementTextInput(capi, ElementBounds.FixedSize(100, 24), null, CairoFont.TextInput())
+            )
+            .Add(
+                new MNGuiElementTextButton(capi, "Button", ElementBounds.FixedSize(100, 26)),
+                "button-button"
+            )
+            .Add(
+                new MNGuiElementLayoutContainer(capi, BoundsStd.FitToChildren()),
+                "container-sub"
+            )
+            .Add(
+                CreateInsetClipContainer()
+            )
+            .Add(
+                new MNGuiElementTextButton(capi, "Push to clip", ElementBounds.FixedSize(100, 26)),
+                "button-pushtoclip"
             );
+        //layout.CustomMinWidth = 500;
+        //layout.CustomMinHeight = 500;
 
-        RootLayout.SetChildLayout(layout);
+        DialogBuilder.SetChildLayout(layout);
+        posts.Clear();
         ClearComposers();
-        SingleComposer = RootLayout.Layout(capi, this, "refactored-layout-test");
-
+        SingleComposer = DialogBuilder.Layout(capi, this, "refactored-layout-test");
         var boundsHie = DebugUtil.GetBoundsTree(SingleComposer.Bounds);
         capi.Logger.Event(boundsHie);
+
+        dialogController = new StandardDialogController(capi, SingleComposer, layout);
+
+        var buttonButton = dialogController.GetElement<MNGuiElementTextButton>("button-button");
+        buttonButton!.EventClicked = OnButtonClicked;
+        var pushToClipButton = dialogController.GetElement<MNGuiElementTextButton>("button-pushtoclip");
+        pushToClipButton!.EventClicked = OnPushToClip;
     }
 
     public override void OnGuiOpened() {
@@ -55,4 +96,135 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
         SetupDialog();
         base.OnGuiOpened();
     }
+
+    private LayoutBase CreateInsetContainer() {
+        var elementStd = new ElementStd(capi);
+        var contentLayout = new VerticalLayout(capi)
+            .Add(
+                new HorizontalLayout(capi).Add(elementStd.TextAutoBoxSize("123")).Add(elementStd.TextAutoBoxSize("456"))
+            )
+            .Add(
+                new HorizontalLayout(capi).Add(elementStd.TextAutoBoxSize("ABCDEF")).Add(elementStd.TextAutoBoxSize("XYZ"))
+            );
+
+
+        var insetLayout = new SimpleWrapperLayout(new MNGuiElementInset(capi, BoundsStd.FitToChildren()), "inset-e1");
+        var clipParentLayout = new SimpleWrapperLayout(new GuiElementDummy(capi, BoundsStd.FitToChildren().WithFixedPadding(5.0)));
+        var containerLayout = new SingleLayout(new MNGuiElementLayoutContainer(capi, BoundsStd.FitToChildren(), initialLayout: contentLayout), "container-inset");
+
+        insetLayout
+            .Add(
+                clipParentLayout
+                    .Add(
+                        containerLayout
+                    )
+            );
+
+        return insetLayout;
+
+    }
+
+    private LayoutBase CreateInsetClipContainer() {
+        var elementStd = new ElementStd(capi);
+        var contentLayout = new VerticalLayout(capi)
+            .Add(
+                new HorizontalLayout(capi).Add(elementStd.TextAutoBoxSize("123")).Add(elementStd.TextAutoBoxSize("456"))
+            )
+            .Add(
+                new HorizontalLayout(capi).Add(elementStd.TextAutoBoxSize("ABCDEF")).Add(elementStd.TextAutoBoxSize("XYZ"))
+            );
+
+        var rowLayout = new HorizontalLayout(capi);
+
+        var insetLayout = new SimpleWrapperLayout(new MNGuiElementInset(capi, BoundsStd.FitToChildren()), "inset-e1");
+        var clipParentLayout = new SimpleWrapperLayout(new GuiElementDummy(capi, BoundsStd.FitToChildren().WithFixedPadding(5.0)));
+        var clipStartLayout = new SimpleWrapperLayout(new MNGuiElementClipStart(capi, ElementBounds.FixedSize(10, 10).WithSizing(ElementSizing.FitToChildren))).WithMaxHeight(100);
+        var clipEndLayout = new SimpleWrapperLayout(new MNGuiElementClipEnd(capi));
+        var containerLayout = new SingleLayout(new MNGuiElementLayoutContainer(capi, BoundsStd.FitToChildren(), initialLayout: contentLayout), "container-insideclip");
+        var scrollbar = new MNGuiElementVerticalScrollbar(capi, ElementBounds.FixedSize(10, 110));
+        var scrollBarLayout = new SingleLayout(scrollbar);
+        scrollbar.SetViewAndContentBounds(clipStartLayout.Bounds, containerLayout.Bounds);
+
+        rowLayout
+            .Add(
+                insetLayout
+                    .Add(
+                        clipParentLayout
+                            .Add(
+                                clipStartLayout
+                                    .Add(
+                                        containerLayout
+                                    )
+                            )
+                            .Add(
+                                clipEndLayout
+                            )
+                    )
+            )
+            .Add(
+                scrollBarLayout
+            );
+
+        return rowLayout;
+
+    }
+
+    void UpdateContainerLayoutWithPosts(MNGuiElementLayoutContainer container) {
+        var guiStd = new ElementStd(capi);
+        var layout = new VerticalLayout(capi, 5);
+
+        foreach (var post in posts) {
+            layout.Add(guiStd.TextAutoBoxSize(post));
+        }
+
+        container.SetNewLayout(layout);
+    }
+
+    bool OnButtonClicked() {
+        if (dialogController == null) return false;
+
+        var layoutContainer = dialogController.GetElement<MNGuiElementLayoutContainer>("container-sub");
+
+        if (layoutContainer == null) {
+            capi.Logger.Warning($"Couldn't find container");
+            return false;
+        }
+
+        // Add post and update layout
+        posts.Add("Foo!");
+
+        UpdateContainerLayoutWithPosts(layoutContainer);
+
+        //capi.Event.RegisterCallback(dt => {
+        //    dialogController.OnBoundsUpdated();
+        //},
+        //0);
+
+        return true;
+    }
+
+    bool OnPushToClip() {
+        if (dialogController == null) return false;
+
+        var layoutContainer = dialogController.GetElement<MNGuiElementLayoutContainer>("container-insideclip");
+
+        if (layoutContainer == null) {
+            capi.Logger.Warning($"Couldn't find container");
+            return false;
+        }
+
+        // Add post and update layout
+        posts.Add("Foo!");
+
+        UpdateContainerLayoutWithPosts(layoutContainer);
+
+        return true;
+    }
+
+    /*
+    // Prevent close on ESC
+    public override bool OnEscapePressed() {
+        return false;
+    }
+    */
 }

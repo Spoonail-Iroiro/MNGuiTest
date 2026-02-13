@@ -11,12 +11,13 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 using System.Text;
 using MNGuiTest.Patches;
+using MNGuiTest.Gui.Specific;
+using MNGui.Extensions;
+using MNGui.Util;
 
 namespace MNGuiTest;
 
 public class MNGuiTestModSystem : ModSystem {
-    GuiDialogTest1? test1Dialog;
-
     public static string ModID { get; private set; } = "";
 
     public Harmony Harmony => new Harmony(Mod.Info.ModID);
@@ -65,6 +66,9 @@ public class MNGuiTestModSystem : ModSystem {
             ["simplest-container"] = new GuiDialogSimplestContainer("Simplest Container", api),
             ["dyntext"] = new GuiDialogDynamicTextTest("dyntext", api),
             ["refactored-layout"] = new GuiDialogRefactoredLayoutTest("Refactor", api),
+            ["debug-window"] = new GuiDialogDebugWindow("Debugging", api),
+            ["inset-container-samples"] = new GuiDialogInsetContainerSamples("Debugging", api),
+            ["test1-with-container"] = new GuiDialogTest1WithContainer("Test1WithContainer", api),
         };
 
         var parsers = api.ChatCommands.Parsers;
@@ -81,35 +85,29 @@ public class MNGuiTestModSystem : ModSystem {
                 return TextCommandResult.Deferred;
             });
 
-        //var subCommand1 = rootCommand
-        //    .BeginSubCommand("test1")
-        //    .WithArgs(parsers.Word("formname"))
-        //    .HandleWith(args => {
-        //        //if (test1Dialog == null) {
-        //        //    test1Dialog = ;
-        //        //}
-        //        if (!test1Dialog.IsOpened()) {
-        //            test1Dialog.SetupDialog();
-        //            test1Dialog.TryOpen();
-        //        }
+        var debugWindowCommand = api.ChatCommands
+            .Create("debug-window")
+            .RequiresPrivilege(Privilege.chat)
+            .RequiresPlayer()
+            .HandleWith(args => {
+                var cmdSB = new StringBuilder();
 
-        //        return TextCommandResult.Success("");
-        //    });
+                var modSystem = api.ModLoader.GetModSystem<GUIDebugModSystem>();
 
-        //GuiDialogTest2? test2Dialog = null;
+                var hoveredElements = modSystem.FindHoveredElements().ToList();
 
-        //var subCommand2 = rootCommand
-        //    .BeginSubCommand("test2")
-        //    .HandleWith(args => {
-        //        if (test2Dialog == null) {
-        //            test2Dialog = new(api);
-        //        }
+                foreach (var elem in hoveredElements) {
+                    cmdSB.AppendLine($"{elem.GetType().Name}");
+                    if (elem.Bounds != null) {
+                        var bounds = elem.Bounds;
+                        cmdSB.AppendLine($"Pos: ({BoundsUtil.UnScaled(bounds.absX)}, {BoundsUtil.UnScaled(bounds.absY)})");
+                        cmdSB.AppendLine($"Size: ({bounds.UnscaledOuterWidth()}, {bounds.UnscaledOuterHeight()})");
+                    }
+                }
 
-        //        if (!test2Dialog.IsOpened()) {
-        //            test2Dialog.TryOpen();
-        //        }
-        //        return TextCommandResult.Success("");
-        //    });
+                return TextCommandResult.Success(cmdSB.ToString());
+            });
+
     }
 
     public override void Dispose() {
