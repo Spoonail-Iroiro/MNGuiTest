@@ -107,7 +107,7 @@ public class GuiDialogTest1 : GuiDialogGeneric {
             )
             .Add(
                 // Unreadable way to add right aligned multiple elements
-                new HorizontalLayout(capi, alignment: HorizontalLayoutAlignment.Right)
+                new HorizontalLayout(capi, alignment: HorizontalAlignment.Right)
                     .Add(
                         new HorizontalLayout(capi)
                         .Add(
