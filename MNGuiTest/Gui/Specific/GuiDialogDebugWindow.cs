@@ -33,8 +33,8 @@ public class GuiDialogDebugWindow : GuiDialogGeneric {
             .WithStandardClose(false);
 
         var topInsetLayoutBuilder = new InsetContainerLayoutBuilder(capi, "container-top")
-            .WithFitToChildren(BoxSide.Horizontal)
-            .WithFixed(BoxSide.Vertical, 500)
+            .WithSizeFitToChildren(BoxSide.Horizontal)
+            .WithSizeFixed(BoxSide.Vertical, 500)
             .WithInitialLayout(WidgetDebug.InitialLayout(capi));
         var topInsetLayout = topInsetLayoutBuilder.Build();
 

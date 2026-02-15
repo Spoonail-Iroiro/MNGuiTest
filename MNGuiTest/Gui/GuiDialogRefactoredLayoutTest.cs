@@ -22,27 +22,40 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
     public void SetupDialog() {
         DialogBuilder = new StandardDialogBuilder();
         var guiStd = new ElementStd(capi);
+        var elementStd = new ElementStd(capi);
 
-        //var layout = new HorizontalLayout(capi, 5)
-        //    .Add(guiStd.TextAutoBoxSize("Foo"))
-        //    .Add(guiStd.TextAutoBoxSize("Bar"))
-        //    .Add(guiStd.TextAutoBoxSize("Buff"))
-        //    .Add(
-        //        new HorizontalLayout(capi, 10)
-        //        .Add(guiStd.TextAutoBoxSize("1234"))
-        //        .Add(guiStd.TextAutoBoxSize("234"))
-        //    );
+        var contentLayout = new VerticalLayout(capi)
+            .Add(
+                new HorizontalLayout(capi).Add(elementStd.TextAutoBoxSize("123")).Add(elementStd.TextAutoBoxSize("456"))
+            )
+            .Add(
+                new HorizontalLayout(capi).Add(elementStd.TextAutoBoxSize("ABCDEF")).Add(elementStd.TextAutoBoxSize("XYZ"))
+            );
+
+        var insetContainerLayoutBuilder = new InsetContainerLayoutBuilder(capi, "container-insideclip")
+            .WithSizeFitToChildren(BoxSide.Horizontal)
+            .WithSizeFitToChildrenRange(BoxSide.Vertical, 100)
+            .WithInitialLayout(contentLayout);
+        var insetContainerLayout = insetContainerLayoutBuilder.Build();
 
         var layout = new VerticalLayout(capi, 5)
             .Add(
-                new HorizontalLayout(capi)
-                .Add(guiStd.TextAutoBoxSize("Foo"))
-                .Add(guiStd.TextAutoBoxSize("Bar"))
+                new HorizontalLayout(capi, 5)
+                .Add(
+                    new HorizontalLayout(capi, 2)
+                        .Add(guiStd.TextAutoBoxSize("input"))
+                        .Add(
+                            new GuiElementTextInput(capi, ElementBounds.FixedSize(100, GuiStyle.SmallishFontSize), null, font: CairoFont.WhiteSmallText()),
+                            "input-top",
+                            hSizePolicy: SizePolicy.Stretch
+                        )
+                )
+                .Add(new MNGuiElementTextButton(capi, "submit", ElementBounds.FixedSize(100, GuiStyle.SmallishFontSize), font: CairoFont.WhiteSmallishText()))
             )
             .Add(
                 new HorizontalLayout(capi)
                 .Add(guiStd.TextAutoBoxSize("123"))
-                .Add(guiStd.TextAutoBoxSize("456"))
+                .Add(guiStd.TextAutoBoxSize("456789012345678901234567890", font: CairoFont.WhiteSmallishText()))
             )
             .Add(
                 new HorizontalLayout(capi)
@@ -50,7 +63,8 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
                 .Add(guiStd.TextAutoBoxSize("456"))
             )
             .Add(
-                new GuiElementTextInput(capi, ElementBounds.FixedSize(100, 24), null, CairoFont.TextInput())
+                new GuiElementTextInput(capi, ElementBounds.FixedSize(100, 24), null, CairoFont.TextInput()),
+                hSizePolicy: SizePolicy.Stretch
             )
             .Add(
                 new GuiElementTextInput(capi, ElementBounds.FixedSize(100, 24), null, CairoFont.TextInput())
@@ -67,7 +81,7 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
                 "container-sub"
             )
             .Add(
-                CreateInsetClipContainer()
+                insetContainerLayout
             )
             .Add(
                 new MNGuiElementTextButton(capi, "Push to clip", ElementBounds.FixedSize(100, 26)),
@@ -141,8 +155,8 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
         var clipStartLayout = new SimpleWrapperLayout(new MNGuiElementClipStart(capi, ElementBounds.FixedSize(10, 10).WithSizing(ElementSizing.FitToChildren))).WithMaxHeight(100);
         var clipEndLayout = new SimpleWrapperLayout(new MNGuiElementClipEnd(capi));
         var containerLayout = new SingleLayout(new MNGuiElementLayoutContainer(capi, BoundsStd.FitToChildren(), initialLayout: contentLayout), "container-insideclip");
-        var scrollbar = new MNGuiElementVerticalScrollbar(capi, ElementBounds.FixedSize(10, 110));
-        var scrollBarLayout = new SingleLayout(scrollbar);
+        var scrollbar = new MNGuiElementVerticalScrollbar(capi, ElementBounds.FixedSize(10, 10));
+        var scrollBarLayout = new SingleLayout(scrollbar).WithVerticalSizePolicy(SizePolicy.Stretch);
         scrollbar.SetViewAndContentBounds(clipStartLayout.Bounds, containerLayout.Bounds);
 
         rowLayout

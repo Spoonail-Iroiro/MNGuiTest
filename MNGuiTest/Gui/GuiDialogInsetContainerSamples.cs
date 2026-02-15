@@ -18,6 +18,9 @@ public class GuiDialogInsetContainerSamples : GuiDialogGeneric {
 
         var rowLayout1 = new HorizontalLayout(capi, 10)
             .Add(
+                GetDefaultLayout()
+            )
+            .Add(
                 GetAllFixedLayout()
             )
             .Add(
@@ -44,11 +47,12 @@ public class GuiDialogInsetContainerSamples : GuiDialogGeneric {
         dialogBuilder.SetChildLayout(layout);
 
         ClearComposers();
+        contents.Clear();
         SingleComposer = dialogBuilder.Layout(capi, this, this.GetType().Name);
 
         controller = new(capi, SingleComposer, layout);
 
-        string[] sampleIDs = ["allfixed", "allfittochildren", "verticalfittochildrenrange", "verticalfixedwithoutclip"];
+        string[] sampleIDs = ["default", "allfixed", "allfittochildren", "verticalfittochildrenrange", "verticalfixedwithoutclip"];
 
         foreach (var sampleID in sampleIDs) {
             var button = controller.GetElement<MNGuiElementTextButton>("button-add-" + sampleID);
@@ -56,49 +60,83 @@ public class GuiDialogInsetContainerSamples : GuiDialogGeneric {
         }
     }
 
+    LayoutBase GetDefaultLayout() {
+        var sampleID = "default";
+        var layoutBuilder = new InsetContainerLayoutBuilder(capi, "container-" + sampleID);
+        return GetSampleLayout("Default", layoutBuilder, sampleID);
+    }
+
     LayoutBase GetAllFixedLayout() {
         var sampleID = "allfixed";
         var layoutBuilder = new InsetContainerLayoutBuilder(capi, "container-" + sampleID)
-            .WithFixed(BoxSide.Horizontal, 100)
-            .WithFixed(BoxSide.Vertical, 100);
-        return GetSampleLayout(layoutBuilder, sampleID);
+            .WithSizeFixed(BoxSide.Horizontal, 100)
+            .WithSizeFixed(BoxSide.Vertical, 100);
+        return GetSampleLayout("Fixed 100 both on horizontal/vertical", layoutBuilder, sampleID);
     }
 
     LayoutBase GetAllFitToChildrenLayout() {
         var sampleID = "allfittochildren";
         var layoutBuilder = new InsetContainerLayoutBuilder(capi, "container-" + sampleID)
-            .WithFitToChildren(BoxSide.Horizontal)
-            .WithFitToChildren(BoxSide.Vertical)
+            .WithSizeFitToChildren(BoxSide.Horizontal)
+            .WithSizeFitToChildren(BoxSide.Vertical)
             .WithScrollbar(false)
             .WithClip(false);
 
-        return GetSampleLayout(layoutBuilder, sampleID);
+        return GetSampleLayout("FitToChildren both on horizontal/vertical without clip", layoutBuilder, sampleID);
     }
 
     LayoutBase GetVerticalFitToChildrenRangeLayout() {
         var sampleID = "verticalfittochildrenrange";
         var layoutBuilder = new InsetContainerLayoutBuilder(capi, "container-" + sampleID)
-            .WithFitToChildren(BoxSide.Horizontal)
-            .WithFitToChildrenRange(BoxSide.Vertical, 150);
+            .WithSizeFitToChildrenRange(BoxSide.Vertical, 150);
 
-        return GetSampleLayout(layoutBuilder, sampleID);
+        return GetSampleLayout("FitToChildrenRange 150 on vertical", layoutBuilder, sampleID);
     }
 
     LayoutBase GetVerticalFixedWithoutClipLayout() {
         var sampleID = "verticalfixedwithoutclip";
         var layoutBuilder = new InsetContainerLayoutBuilder(capi, "container-" + sampleID)
-            .WithFitToChildren(BoxSide.Horizontal)
-            .WithFixed(BoxSide.Vertical, 200)
+            .WithSizeFitToChildren(BoxSide.Horizontal)
+            .WithSizeFixed(BoxSide.Vertical, 200)
             .WithScrollbar(false)
             .WithClip(false);
-        return GetSampleLayout(layoutBuilder, sampleID);
+        return GetSampleLayout("Fixed on vertical without clip (not recommended)", layoutBuilder, sampleID);
     }
 
-    LayoutBase GetSampleLayout(InsetContainerLayoutBuilder layoutBuilder, string sampleID) {
+    LayoutBase GetSampleLayout(string description, InsetContainerLayoutBuilder layoutBuilder, string sampleID) {
         var elementStd = new ElementStd(capi);
         var topInsetLayout = layoutBuilder.Build();
 
-        var layout = new VerticalLayout(capi, 10)
+        var layout = new VerticalLayout(capi, 10);
+        if (description != "") {
+            layout.Add(
+                    new SimpleWrapperLayout(
+                        new MNGuiElementStaticCustomDraw(
+                            capi,
+                            ElementBounds.FixedSize(10, 10).WithSizing(ElementSizing.FitToChildren).WithFixedPadding(5),
+                            (ctx, surface, bounds) => {
+                                ctx.SetSourceRGBA(1.0, 1.0, 1.0, 0.1);
+                                GuiElement.RoundRectangle(ctx, bounds.bgDrawX, bounds.bgDrawY, bounds.OuterWidth, bounds.OuterHeight, 1.0);
+                                ctx.Fill();
+                            }
+                    ))
+                        .WithHorizontalSizePolicy(SizePolicy.Stretch)
+                        .Add(
+                            new HorizontalLayout(capi)
+                            .Add(
+                                () => {
+                                    var text = new GuiElementDynamicText(capi, description, CairoFont.WhiteDetailText(), ElementBounds.FixedSize(200, 10));
+                                    text.Bounds.CalcWorldBounds();
+                                    text.AutoHeight();
+                                    return text;
+                                }
+                            )
+                        )
+
+                );
+        }
+
+        layout
             .Add(
                 topInsetLayout
             )

@@ -16,9 +16,9 @@ public class GuiDialogTest1WithContainer : GuiDialogGeneric {
         var test1Layout = GuiDialogTest1.GetBody(capi);
 
         var layoutBuilder = new InsetContainerLayoutBuilder(capi, "container-inside")
-            .WithFitToChildren(BoxSide.Horizontal)
+            .WithSizeFitToChildren(BoxSide.Horizontal)
             //.WithFitToChildrenRange(BoxSide.Vertical, 450)
-            .WithFixed(BoxSide.Vertical, 400)
+            .WithSizeFixed(BoxSide.Vertical, 400)
             .WithInitialLayout(test1Layout);
 
         var dialogBuilder = new ContainerDialogBuilder();
@@ -32,10 +32,28 @@ public class GuiDialogTest1WithContainer : GuiDialogGeneric {
         controller = new(capi, SingleComposer, layout);
 
         var button = controller.GetElement<MNGuiElementTextButton>("btn-click");
+        button.EventClicked = OnButtonClicked;
+    }
+
+    bool OnButtonClicked() {
+        var dynText = controller?.GetElement<GuiElementDynamicText>("txt-result");
+        if (dynText != null) {
+            var text = dynText.Text;
+            text += "\nNewLine!";
+            dynText.SetNewText(text, true, true);
+
+            controller.OnBoundsUpdated();
+        }
+        else {
+            capi.Logger.Warning($"txt-result not found!");
+        }
+
+        return true;
     }
 
     public override void OnGuiOpened() {
         SetupDialog();
         base.OnGuiOpened();
     }
+
 }
