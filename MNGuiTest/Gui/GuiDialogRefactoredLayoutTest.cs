@@ -1,11 +1,12 @@
-﻿using MNGui.Layouts;
-using MNGui.DialogBuilders;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
+using Vintagestory.API.MathTools;
 using MNGui.GuiElements;
 using MNGui.Std;
-using MNGui.GuiElements.Layout;
+using MNGui.Layouts;
+using MNGui.DialogBuilders;
 
 namespace MNGuiTest.Gui;
 public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
@@ -40,9 +41,10 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
 
         var layout = new VerticalLayout(capi, 5)
             .Add(
-                new HorizontalLayout(capi, 5)
+                // Test for horizontal layout in horizontal layout
+                new HorizontalLayout(capi, 5, vAlign: VerticalAlignment.Middle)
                 .Add(
-                    new HorizontalLayout(capi, 2)
+                    new HorizontalLayout(capi, 2, vAlign: VerticalAlignment.Middle)
                         .Add(guiStd.TextAutoBoxSize("input"))
                         .Add(
                             new GuiElementTextInput(capi, ElementBounds.FixedSize(100, GuiStyle.SmallishFontSize), null, font: CairoFont.WhiteSmallText()),
@@ -53,6 +55,7 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
                 .Add(new MNGuiElementTextButton(capi, "submit", ElementBounds.FixedSize(100, GuiStyle.SmallishFontSize), font: CairoFont.WhiteSmallishText()))
             )
             .Add(
+                // Horizontal spacing element (to test other stretcch layouts)
                 new HorizontalLayout(capi)
                 .Add(guiStd.TextAutoBoxSize("123"))
                 .Add(guiStd.TextAutoBoxSize("456789012345678901234567890", font: CairoFont.WhiteSmallishText()))
@@ -84,8 +87,17 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
                 insetContainerLayout
             )
             .Add(
-                new MNGuiElementTextButton(capi, "Push to clip", ElementBounds.FixedSize(100, 26)),
-                "button-pushtoclip"
+                new HorizontalLayout(capi, hAlign: HorizontalAlignment.Center)
+                .Add(
+                    new MNGuiElementTextButton(capi, "Push to clip", ElementBounds.FixedSize(100, 26)),
+                    "button-pushtoclip"
+                )
+            )
+            .Add(
+                CreateHorizontalLayoutAlignmentTest()
+            )
+            .Add(
+                CreateVerticalLayoutAlignmentTest()
             );
         //layout.CustomMinWidth = 500;
         //layout.CustomMinHeight = 500;
@@ -111,76 +123,41 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
         base.OnGuiOpened();
     }
 
-    private LayoutBase CreateInsetContainer() {
-        var elementStd = new ElementStd(capi);
-        var contentLayout = new VerticalLayout(capi)
-            .Add(
-                new HorizontalLayout(capi).Add(elementStd.TextAutoBoxSize("123")).Add(elementStd.TextAutoBoxSize("456"))
-            )
-            .Add(
-                new HorizontalLayout(capi).Add(elementStd.TextAutoBoxSize("ABCDEF")).Add(elementStd.TextAutoBoxSize("XYZ"))
-            );
+    private LayoutBase CreateHorizontalLayoutAlignmentTest() {
+        var eStd = new ElementStd(capi);
+        var rootLayout = new HorizontalLayout(capi, 10);
+        foreach (var hAlignment in Enum.GetValues<HorizontalAlignment>()) {
+            var columnLayout = new VerticalLayout(capi);
+            columnLayout.Add(new MNGuiElementStaticText(capi, "(Spacer 300px)", ElementBounds.FixedSize(300, 20), backgroundColorRGBA: new(1.0, 1.0, 1.0, 0.2)));
+            foreach (var vAlignment in Enum.GetValues<VerticalAlignment>()) {
+                var cellLayout = new HorizontalLayout(capi, hAlign: hAlignment, vAlign: vAlignment)
+                    .Add(eStd.TextAutoBoxSize("Test"))
+                    .Add(new GuiElementTextInput(capi, ElementBounds.FixedSize(100, 50), null, font: CairoFont.WhiteDetailText()))
+                    .Add(new MNGuiElementTextButton(capi, "Push", ElementBounds.FixedSize(100, 25)));
+                columnLayout.Add(cellLayout);
+            }
+            rootLayout.Add(columnLayout);
+        }
 
-
-        var insetLayout = new SimpleWrapperLayout(new MNGuiElementInset(capi, BoundsStd.FitToChildren()), "inset-e1");
-        var clipParentLayout = new SimpleWrapperLayout(new GuiElementDummy(capi, BoundsStd.FitToChildren().WithFixedPadding(5.0)));
-        var containerLayout = new SingleLayout(new MNGuiElementLayoutContainer(capi, BoundsStd.FitToChildren(), initialLayout: contentLayout), "container-inset");
-
-        insetLayout
-            .Add(
-                clipParentLayout
-                    .Add(
-                        containerLayout
-                    )
-            );
-
-        return insetLayout;
-
+        return rootLayout;
     }
 
-    private LayoutBase CreateInsetClipContainer() {
-        var elementStd = new ElementStd(capi);
-        var contentLayout = new VerticalLayout(capi)
-            .Add(
-                new HorizontalLayout(capi).Add(elementStd.TextAutoBoxSize("123")).Add(elementStd.TextAutoBoxSize("456"))
-            )
-            .Add(
-                new HorizontalLayout(capi).Add(elementStd.TextAutoBoxSize("ABCDEF")).Add(elementStd.TextAutoBoxSize("XYZ"))
-            );
+    private LayoutBase CreateVerticalLayoutAlignmentTest() {
+        var eStd = new ElementStd(capi);
+        var rootLayout = new VerticalLayout(capi, 10);
+        foreach (var vAlignment in Enum.GetValues<VerticalAlignment>()) {
+            var columnLayout = new HorizontalLayout(capi, 2);
+            columnLayout.Add(new MNGuiElementStaticText(capi, "S\np\na\nc\ne", ElementBounds.FixedSize(20, 150), backgroundColorRGBA: new Vec4d(1.0, 1.0, 1.0, 0.2)));
+            foreach (var hAlignment in Enum.GetValues<HorizontalAlignment>()) {
+                var cellLayout = new VerticalLayout(capi, hAlign: hAlignment, vAlign: vAlignment)
+                    .Add(eStd.TextAutoBoxSize("Test"))
+                    .Add(new GuiElementTextArea(capi, ElementBounds.FixedSize(50, 100), null, font: CairoFont.WhiteDetailText()));
+                columnLayout.Add(cellLayout);
+            }
+            rootLayout.Add(columnLayout);
+        }
 
-        var rowLayout = new HorizontalLayout(capi);
-
-        var insetLayout = new SimpleWrapperLayout(new MNGuiElementInset(capi, BoundsStd.FitToChildren()), "inset-e1");
-        var clipParentLayout = new SimpleWrapperLayout(new GuiElementDummy(capi, BoundsStd.FitToChildren().WithFixedPadding(5.0)));
-        var clipStartLayout = new SimpleWrapperLayout(new MNGuiElementClipStart(capi, ElementBounds.FixedSize(10, 10).WithSizing(ElementSizing.FitToChildren))).WithMaxHeight(100);
-        var clipEndLayout = new SimpleWrapperLayout(new MNGuiElementClipEnd(capi));
-        var containerLayout = new SingleLayout(new MNGuiElementLayoutContainer(capi, BoundsStd.FitToChildren(), initialLayout: contentLayout), "container-insideclip");
-        var scrollbar = new MNGuiElementVerticalScrollbar(capi, ElementBounds.FixedSize(10, 10));
-        var scrollBarLayout = new SingleLayout(scrollbar).WithVerticalSizePolicy(SizePolicy.Stretch);
-        scrollbar.SetViewAndContentBounds(clipStartLayout.Bounds, containerLayout.Bounds);
-
-        rowLayout
-            .Add(
-                insetLayout
-                    .Add(
-                        clipParentLayout
-                            .Add(
-                                clipStartLayout
-                                    .Add(
-                                        containerLayout
-                                    )
-                            )
-                            .Add(
-                                clipEndLayout
-                            )
-                    )
-            )
-            .Add(
-                scrollBarLayout
-            );
-
-        return rowLayout;
-
+        return rootLayout;
     }
 
     void UpdateContainerLayoutWithPosts(MNGuiElementLayoutContainer container) {
