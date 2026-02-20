@@ -10,6 +10,7 @@ using MNGui;
 using Vintagestory.API.Util;
 using MNGui.Std;
 using MNGui.GuiElements;
+using MNGui.Layouts.Extensions;
 
 namespace MNGuiTest.Gui;
 public class GuiDialogTest1 : GuiDialogGeneric {
@@ -106,8 +107,7 @@ public class GuiDialogTest1 : GuiDialogGeneric {
                     )
             )
             .Add(
-                // Unreadable way to add right aligned multiple elements
-                new HorizontalLayout(capi, alignment: HorizontalAlignment.Right)
+                new HorizontalLayout(capi, hAlign: AlignmentHorizontal.Right)
                     .Add(
                         new HorizontalLayout(capi)
                         .Add(

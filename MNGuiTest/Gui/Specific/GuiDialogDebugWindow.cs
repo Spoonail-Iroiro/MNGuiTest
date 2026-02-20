@@ -3,6 +3,7 @@ using MNGui.Extensions;
 using MNGui.GuiElements;
 using MNGui.GuiElements.Layout;
 using MNGui.Layouts;
+using MNGui.Layouts.Extensions;
 using MNGui.Std;
 using MNGui.Util;
 using System;
@@ -152,7 +153,7 @@ public class WidgetDebug {
     }
 
     public static LayoutWithElementBounds InitialLayout(ICoreClientAPI capi) {
-        var layout = new SingleLayout(
+        var layout = new ElementLayout(
                 new GuiElementDynamicText(capi, "Empty", CairoFont.WhiteDetailText(), ElementBounds.FixedSize(400, 300)),
                 DynamicTextName
             );
