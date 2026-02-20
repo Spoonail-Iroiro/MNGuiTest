@@ -51,6 +51,8 @@ public class MNGuiTestModSystem : ModSystem {
 
             PatchScreenConnectingServer(api);
         }
+
+        api.Logger.Event($"Using MNGui v{MNGui.Meta.LibraryInfo.Version}!");
     }
 
     public override void StartServerSide(ICoreServerAPI api) {

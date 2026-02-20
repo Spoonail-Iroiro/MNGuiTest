@@ -1,6 +1,7 @@
 ﻿using MNGui.DialogBuilders;
 using MNGui.GuiElements;
 using MNGui.Layouts;
+using MNGui.Layouts.Extensions;
 using MNGui.Std;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,9 @@ public class GuiDialogInsetContainerSamples : GuiDialogGeneric {
 
         var rowLayout2 = new HorizontalLayout(capi, 10)
             .Add(
+                GetWithoutInsetLayout()
+            )
+            .Add(
                 GetVerticalFixedWithoutClipLayout()
             );
 
@@ -52,7 +56,7 @@ public class GuiDialogInsetContainerSamples : GuiDialogGeneric {
 
         controller = new(capi, SingleComposer, layout);
 
-        string[] sampleIDs = ["default", "allfixed", "allfittochildren", "verticalfittochildrenrange", "verticalfixedwithoutclip"];
+        string[] sampleIDs = ["default", "allfixed", "allfittochildren", "verticalfittochildrenrange", "withoutinset", "verticalfixedwithoutclip"];
 
         foreach (var sampleID in sampleIDs) {
             var button = controller.GetElement<MNGuiElementTextButton>("button-add-" + sampleID);
@@ -93,6 +97,15 @@ public class GuiDialogInsetContainerSamples : GuiDialogGeneric {
         return GetSampleLayout("FitToChildrenRange 150 on vertical", layoutBuilder, sampleID);
     }
 
+    LayoutBase GetWithoutInsetLayout() {
+        var sampleID = "withoutinset";
+        var layoutBuilder = new InsetContainerLayoutBuilder(capi, "container-" + sampleID)
+            .WithSizeFitToChildren(BoxSide.Horizontal)
+            .WithSizeFixed(BoxSide.Vertical, 200)
+            .WithInset(false);
+        return GetSampleLayout("Without inset", layoutBuilder, sampleID);
+    }
+
     LayoutBase GetVerticalFixedWithoutClipLayout() {
         var sampleID = "verticalfixedwithoutclip";
         var layoutBuilder = new InsetContainerLayoutBuilder(capi, "container-" + sampleID)
@@ -110,7 +123,7 @@ public class GuiDialogInsetContainerSamples : GuiDialogGeneric {
         var layout = new VerticalLayout(capi, 10);
         if (description != "") {
             layout.Add(
-                    new SimpleWrapperLayout(
+                    new WrapperElementLayout(
                         new MNGuiElementStaticCustomDraw(
                             capi,
                             ElementBounds.FixedSize(10, 10).WithSizing(ElementSizing.FitToChildren).WithFixedPadding(5),
@@ -122,17 +135,13 @@ public class GuiDialogInsetContainerSamples : GuiDialogGeneric {
                     ))
                         .WithHorizontalSizePolicy(SizePolicy.Stretch)
                         .Add(
-                            new HorizontalLayout(capi)
-                            .Add(
-                                () => {
-                                    var text = new GuiElementDynamicText(capi, description, CairoFont.WhiteDetailText(), ElementBounds.FixedSize(200, 10));
-                                    text.Bounds.CalcWorldBounds();
-                                    text.AutoHeight();
-                                    return text;
-                                }
-                            )
+                            () => {
+                                var text = new GuiElementDynamicText(capi, description, CairoFont.WhiteDetailText(), ElementBounds.FixedSize(200, 10));
+                                text.Bounds.CalcWorldBounds();
+                                text.AutoHeight();
+                                return text;
+                            }
                         )
-
                 );
         }
 
@@ -155,7 +164,7 @@ public class GuiDialogInsetContainerSamples : GuiDialogGeneric {
 
     void AddAndUpdate(string containerName, string addContent) {
         var elementStd = new ElementStd(capi);
-        var container = controller.GetElement<MNGuiElementLayoutContainer>(containerName);
+        var container = controller.GetElement<MNGuiElementInnerLayoutContainer>(containerName);
         if (container == null) {
             capi.Logger.Warning($"Couldn't find {containerName}");
             return;
@@ -164,7 +173,7 @@ public class GuiDialogInsetContainerSamples : GuiDialogGeneric {
         if (!contents.ContainsKey(containerName)) contents[containerName] = "";
         contents[containerName] += $"{addContent}\n";
 
-        var newLayout = new SingleLayout(elementStd.TextAutoBoxSize(contents[containerName]));
+        var newLayout = new ElementLayout(elementStd.TextAutoBoxSize(contents[containerName]));
 
         container.SetNewLayout(newLayout);
 

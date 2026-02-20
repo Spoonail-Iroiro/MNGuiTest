@@ -7,6 +7,7 @@ using MNGui.GuiElements;
 using MNGui.Std;
 using MNGui.Layouts;
 using MNGui.DialogBuilders;
+using MNGui.Layouts.Extensions;
 
 namespace MNGuiTest.Gui;
 public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
@@ -42,9 +43,9 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
         var layout = new VerticalLayout(capi, 5)
             .Add(
                 // Test for horizontal layout in horizontal layout
-                new HorizontalLayout(capi, 5, vAlign: VerticalAlignment.Middle)
+                new HorizontalLayout(capi, 5, vAlign: AlignmentVertical.Middle)
                 .Add(
-                    new HorizontalLayout(capi, 2, vAlign: VerticalAlignment.Middle)
+                    new HorizontalLayout(capi, 2, vAlign: AlignmentVertical.Middle)
                         .Add(guiStd.TextAutoBoxSize("input"))
                         .Add(
                             new GuiElementTextInput(capi, ElementBounds.FixedSize(100, GuiStyle.SmallishFontSize), null, font: CairoFont.WhiteSmallText()),
@@ -80,18 +81,37 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
                 "button-button"
             )
             .Add(
-                new MNGuiElementLayoutContainer(capi, BoundsStd.FitToChildren()),
+                new MNGuiElementInnerLayoutContainer(capi, BoundsStd.FitToChildren()),
                 "container-sub"
             )
             .Add(
                 insetContainerLayout
             )
             .Add(
-                new HorizontalLayout(capi, hAlign: HorizontalAlignment.Center)
+                new HorizontalLayout(capi, hAlign: AlignmentHorizontal.Center)
                 .Add(
                     new MNGuiElementTextButton(capi, "Push to clip", ElementBounds.FixedSize(100, 26)),
                     "button-pushtoclip"
                 )
+            )
+            .Add(
+                new HorizontalLayout(capi)
+                    .WithAlignment(vAlign: AlignmentVertical.Middle)
+                    .Add(
+                        new HorizontalLayout(capi).Add(elementStd.TextAutoBoxSize("ABC"))
+                            .WithAlignment(AlignmentHorizontal.Right, AlignmentVertical.Bottom)
+                            .WithGuaranteedMinSize(width: 200)
+                    )
+                    .Add(
+                        new VerticalLayout(capi).Add(elementStd.TextAutoBoxSize("ABC\nDEF\nGHQ"))
+                            .WithContentClampedMaxSize(height: 10)
+                            .WithVerticalSizePolicy(SizePolicy.MinSize)
+                    )
+                    .Add(
+                        new HorizontalLayout(capi).Add(elementStd.TextAutoBoxSize("ABC"))
+                            .WithAlignment(AlignmentHorizontal.Center, AlignmentVertical.Middle)
+                            .WithFixedSize(100, 100)
+                    )
             )
             .Add(
                 CreateHorizontalLayoutAlignmentTest()
@@ -126,10 +146,10 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
     private LayoutBase CreateHorizontalLayoutAlignmentTest() {
         var eStd = new ElementStd(capi);
         var rootLayout = new HorizontalLayout(capi, 10);
-        foreach (var hAlignment in Enum.GetValues<HorizontalAlignment>()) {
+        foreach (var hAlignment in Enum.GetValues<AlignmentHorizontal>()) {
             var columnLayout = new VerticalLayout(capi);
             columnLayout.Add(new MNGuiElementStaticText(capi, "(Spacer 300px)", ElementBounds.FixedSize(300, 20), backgroundColorRGBA: new(1.0, 1.0, 1.0, 0.2)));
-            foreach (var vAlignment in Enum.GetValues<VerticalAlignment>()) {
+            foreach (var vAlignment in Enum.GetValues<AlignmentVertical>()) {
                 var cellLayout = new HorizontalLayout(capi, hAlign: hAlignment, vAlign: vAlignment)
                     .Add(eStd.TextAutoBoxSize("Test"))
                     .Add(new GuiElementTextInput(capi, ElementBounds.FixedSize(100, 50), null, font: CairoFont.WhiteDetailText()))
@@ -145,11 +165,12 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
     private LayoutBase CreateVerticalLayoutAlignmentTest() {
         var eStd = new ElementStd(capi);
         var rootLayout = new VerticalLayout(capi, 10);
-        foreach (var vAlignment in Enum.GetValues<VerticalAlignment>()) {
+        foreach (var vAlignment in Enum.GetValues<AlignmentVertical>()) {
             var columnLayout = new HorizontalLayout(capi, 2);
-            columnLayout.Add(new MNGuiElementStaticText(capi, "S\np\na\nc\ne", ElementBounds.FixedSize(20, 150), backgroundColorRGBA: new Vec4d(1.0, 1.0, 1.0, 0.2)));
-            foreach (var hAlignment in Enum.GetValues<HorizontalAlignment>()) {
+            columnLayout.Add(new MNGuiElementStaticText(capi, "Space", ElementBounds.FixedSize(50, 150), backgroundColorRGBA: new Vec4d(1.0, 1.0, 1.0, 0.2)));
+            foreach (var hAlignment in Enum.GetValues<AlignmentHorizontal>()) {
                 var cellLayout = new VerticalLayout(capi, hAlign: hAlignment, vAlign: vAlignment)
+                    .WithGuaranteedMinSize(100)
                     .Add(eStd.TextAutoBoxSize("Test"))
                     .Add(new GuiElementTextArea(capi, ElementBounds.FixedSize(50, 100), null, font: CairoFont.WhiteDetailText()));
                 columnLayout.Add(cellLayout);
@@ -160,7 +181,7 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
         return rootLayout;
     }
 
-    void UpdateContainerLayoutWithPosts(MNGuiElementLayoutContainer container) {
+    void UpdateContainerLayoutWithPosts(MNGuiElementInnerLayoutContainer container) {
         var guiStd = new ElementStd(capi);
         var layout = new VerticalLayout(capi, 5);
 
@@ -174,7 +195,7 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
     bool OnButtonClicked() {
         if (dialogController == null) return false;
 
-        var layoutContainer = dialogController.GetElement<MNGuiElementLayoutContainer>("container-sub");
+        var layoutContainer = dialogController.GetElement<MNGuiElementInnerLayoutContainer>("container-sub");
 
         if (layoutContainer == null) {
             capi.Logger.Warning($"Couldn't find container");
@@ -197,7 +218,7 @@ public class GuiDialogRefactoredLayoutTest : GuiDialogGeneric {
     bool OnPushToClip() {
         if (dialogController == null) return false;
 
-        var layoutContainer = dialogController.GetElement<MNGuiElementLayoutContainer>("container-insideclip");
+        var layoutContainer = dialogController.GetElement<MNGuiElementInnerLayoutContainer>("container-insideclip");
 
         if (layoutContainer == null) {
             capi.Logger.Warning($"Couldn't find container");
