@@ -91,11 +91,11 @@ public class GuiDialogDebugWindow : GuiDialogGeneric {
         if (this.modSystem == null) return;
         if (widgetDebug == null) return;
 
-        var switchElem = controller?.GetElement<GuiElementSwitch>("switch-excludeblank");
-        var excludeBlank = switchElem?.On ?? false;
+        var switchElem = controller!.GetElement<GuiElementSwitch>("switch-excludeblank");
+        var excludeBlank = switchElem.On;
 
-        var switchOnlyWhenHotkey = controller?.GetElement<GuiElementSwitch>("switch-updateonlywhenhotkey");
-        var enableOnlyWhenHotkey = switchOnlyWhenHotkey?.On ?? false;
+        var switchOnlyWhenHotkey = controller.GetElement<GuiElementSwitch>("switch-updateonlywhenhotkey");
+        var enableOnlyWhenHotkey = switchOnlyWhenHotkey.On;
 
         if (enableOnlyWhenHotkey && !capi.Input.KeyboardKeyState[(int)GlKeys.ShiftLeft]) return;
 
