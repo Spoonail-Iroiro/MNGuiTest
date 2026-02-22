@@ -164,7 +164,7 @@ public class GuiDialogInsetContainerSamples : GuiDialogGeneric {
 
     void AddAndUpdate(string containerName, string addContent) {
         var elementStd = new ElementStd(capi);
-        var container = controller.GetElement<MNGuiElementInnerLayoutContainer>(containerName);
+        var container = controller!.GetElement<MNGuiElementInnerLayoutContainer>(containerName);
         if (container == null) {
             capi.Logger.Warning($"Couldn't find {containerName}");
             return;
