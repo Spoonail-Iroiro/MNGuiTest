@@ -161,15 +161,16 @@ public class WidgetDebug {
     }
 
     public void SetText(string text) {
-        try {
-            var dynText = controller.GetElement<GuiElementDynamicText>(DynamicTextName);
-            if (dynText == null) throw new InvalidOperationException($"Couldn't find dynamic text. Did you forget set layout with InitialLayout?");
+        if (text == "") {
+            capi.Logger.Warning("DynamicText can't be empty. Have set ' ' instead");
+            text = " ";
+        }
 
-            dynText.SetNewText(text, autoHeight: true);
-            controller.OnBoundsUpdated();
-        }
-        catch (Exception ex) {
-            capi.Logger.Warning(ex);
-        }
+        var dynText = controller.GetElement<GuiElementDynamicText>(DynamicTextName);
+        if (dynText == null) throw new InvalidOperationException($"Couldn't find dynamic text. Did you forget set layout with InitialLayout?");
+
+        dynText.SetNewText(text, autoHeight: true);
+        controller.OnBoundsUpdated();
+
     }
 }

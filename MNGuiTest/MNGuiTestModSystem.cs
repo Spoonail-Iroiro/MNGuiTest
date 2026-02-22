@@ -48,8 +48,6 @@ public class MNGuiTestModSystem : ModSystem {
 
         if (!Harmony.HasAnyPatches(Mod.Info.ModID)) {
             Harmony.PatchAll();
-
-            PatchScreenConnectingServer(api);
         }
 
         api.Logger.Event($"Using MNGui v{MNGui.Meta.LibraryInfo.Version}!");
@@ -71,6 +69,7 @@ public class MNGuiTestModSystem : ModSystem {
             ["debug-window"] = new GuiDialogDebugWindow("Debugging", api),
             ["inset-container-samples"] = new GuiDialogInsetContainerSamples("Debugging", api),
             ["test1-with-container"] = new GuiDialogTest1WithContainer("Test1WithContainer", api),
+            ["test-weird-scroll"] = new GuiDialogTestWeirdScroll("Weird scroll", api)
         };
 
         var parsers = api.ChatCommands.Parsers;
@@ -115,20 +114,6 @@ public class MNGuiTestModSystem : ModSystem {
     public override void Dispose() {
         base.Dispose();
         Harmony.UnpatchAll(Mod.Info.ModID);
-    }
-
-    public void PatchScreenConnectingServer(ICoreAPI api) {
-        var classType = GetScreenConnectingServerType();
-        if (classType == null) {
-            api.Logger.Error("Type not found");
-            return;
-        }
-
-        var method = AccessTools.Method(classType, "LogAdded");
-
-        var harmonyMethod = new HarmonyMethod(AccessTools.Method(typeof(GuiScreenConnectingServerLogAddedPatcher), "Prefix"));
-
-        Harmony.Patch(method, prefix: harmonyMethod);
     }
 
     public Type? GetScreenConnectingServerType() {

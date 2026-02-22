@@ -17,9 +17,4 @@ public class Patcher1 {
 }
 
 
-public class GuiScreenConnectingServerLogAddedPatcher {
-    public static void Prefix(string message, string ___prevText, GuiComposer ___ElementComposer) {
-        GuiElementDynamicText textElem = ___ElementComposer.GetDynamicText("centertext");
-        var mes = message;
-    }
-}
+
